@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class User {
+
+    - string username
+    - string password
+    - int coins
+    - Stack userStack
+    - Deck userDeck
+    - int stats
+    - string Token
+
+    + User (string username, string password)
+    + void manageCards()
+    + void purchasePackage()
+    + void requestBattle(User opponent)
+    + void acceptBattle()
+    + void changeStats(bool win)
+    + void requestTrade()
+}
+
+abstract class Card {
+    - string cardName
+    - string elementType
+    - string damage
+    - bool inDeck
+    - bool traded
+
+    + {abstract} void attack()
+}
+
+class MonsterCard implements Card {
+    - string monsterType
+    +void attack()
+}
+
+class SpellCard implements Card {
+    +void attack()
+}
+
+class Stack {
+    - arrayList<Card> cards
+
+    + void addCard(card cardName)
+    + void remove(string cardName)
+}
+
+class Package {
+    - arrayList<Card> cards
+
+    + void createCards()
+}
+
+class Deck {
+    - arrayList<Card> cards
+
+    + void addCard()
+    + void removeCard(cardName)
+    + arrayList<Card> getCards()
+}
+
+class Battle {
+    - int round
+
+    + void fight(Deck deck1, Deck deck2)
+}
+
+class Scoreboard {
+
+}
+
+User *-- Stack : owns
+User *-- Deck : has
+User --> Package : purchases
+Stack--> Card : consists of
+Package --> Card : contains
+Deck --> Card : consists of
+
+User --> Battle : requests/takes part in
+
+@enduml
