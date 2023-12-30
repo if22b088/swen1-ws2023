@@ -25,21 +25,28 @@ import java.sql.Connection;
 public class App implements ServerApp {
     @Setter(AccessLevel.PRIVATE)
     private CityController cityController;
+    @Setter(AccessLevel.PRIVATE)
     private UserController userController;
 
     public App() {
         DatabaseService databaseService = new DatabaseService();
 
+        /*
         CityDAO cityDAO = new CityDAO(databaseService.getConnection());
         CityRepository cityRepository = new CityRepository(cityDAO);
-
         setCityController(new CityController(cityRepository));
+        */
+        UserDAO userDAO = new UserDAO(databaseService.getConnection());
+        UserRepository userRepository = new UserRepository(userDAO);
+        setUserController(new UserController(userRepository));
+
     }
 
     public Response handleRequest(Request request) {
 
         switch (request.getMethod()) {
             //TODO: remove cityController
+            //get user information by username
             case GET: {
                 if (request.getPathname().startsWith("/users/")) {
                     //get the username from the path
@@ -64,15 +71,14 @@ public class App implements ServerApp {
 
             }
             case POST: {
-                if (request.getPathname().equals("/cities")) {
+                //create User
+                if (request.getPathname().equals("/users")) {
                     String body = request.getBody();
-                    return this.cityController.createCity(body);
-                } else if (request.getPathname().equals("/users")) {
-                    String body = request.getBody();
-                    return this.cityController.createCity(body);
+                    return this.userController.createUser(body);
+                //login User
                 } else if (request.getPathname().equals("/sessions")) {
                     String body = request.getBody();
-                    return this.cityController.createCity(body);
+                    return this.userController.loginUser(body);
                 } else if (request.getPathname().equals("/packages")) {
                     String body = request.getBody();
                     return this.cityController.createCity(body);
@@ -90,13 +96,22 @@ public class App implements ServerApp {
 
             }
             case PUT:
-                //TODO: add PUT for /users/{usersname}
-                if (request.getPathname().equals("/users/")) {
-                    return this.cityController.getCities();
+                //update name, bio, image for specific username
+                if (request.getPathname().startsWith("/users/")) {
+                    //get the username from the path
+                    String master = request.getPathname();
+                    String target = "/users/";
+                    String replacement = "";
+                    String username= master.replace(target, replacement);
+
+                    return this.userController.updateUser(username,request.getBody());
+                    /*
+                    String body = request.getBody();
+                    return this.userController.updateUser(body);
+                    */
                 } else if (request.getPathname().equals("/deck")) {
                     return this.cityController.getCities();
                 }
-
                 break;
             case DELETE:
                 //TODO: add PUT for /tradings/{tradingdealid}

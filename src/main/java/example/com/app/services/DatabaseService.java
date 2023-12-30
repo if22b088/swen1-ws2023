@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseService {
-    private String connectionString = "jdbc:postgresql://localhost:5432/users?user=postgres&password=postgres";
+    private String connectionString = "jdbc:postgresql://localhost:5432/mtcgdb?user=postgres&password=postgres";
     @Setter(AccessLevel.PRIVATE)
     @Getter
     private Connection connection;

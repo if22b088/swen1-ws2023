@@ -1,6 +1,7 @@
 package example.com.app.models;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,15 +9,20 @@ import lombok.Setter;
 
 @Getter
 @Setter
+
 public class User {
+    @JsonAlias({"Name"})
+    private String name;
     private String username;
     private String password;
-    private String name;
+
     private int coins;
-    private Stack userStack;
+    //private Stack userStack;
     private Deck userDeck;
     private int stats;
+    @JsonAlias({"Bio"})
     private String bio;
+    @JsonAlias({"Image"})
     private String image;
 
 
@@ -32,7 +38,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.coins = 20;
-        this.userStack = new Stack();
+       // this.userStack = new Stack();
         this.userDeck = new Deck();
         this.stats = 100;
     }

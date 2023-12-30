@@ -1,6 +1,5 @@
 package example.com.app.controllers;
 
-import example.com.app.daos.UserDAO;
 import example.com.app.models.City;
 import example.com.app.repositories.CityRepository;
 import example.com.app.services.CityService;

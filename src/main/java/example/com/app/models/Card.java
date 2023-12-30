@@ -9,8 +9,8 @@ public abstract class Card {
     private String cardName;
     private String elementType;
     private String damage;
-    private bool inDeck;
-    private bool traded;
+    private Boolean inDeck;
+    private Boolean traded;
 
     public abstract void attack();
 }

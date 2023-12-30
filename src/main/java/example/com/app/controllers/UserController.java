@@ -1,10 +1,9 @@
 package example.com.app.controllers;
 
 import example.com.app.daos.UserDAO;
-import example.com.app.models.City;
 import example.com.app.models.User;
 import example.com.app.repositories.UserRepository;
-//import example.com.app.services.UserService;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import example.com.http.ContentType;
 import example.com.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.List;
 public class UserController extends Controller{
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
-
     private UserRepository userRepository;
 
 
@@ -27,11 +25,9 @@ public class UserController extends Controller{
     }
 
     public Response getUserByUsername(String username) {
-
         try {
             User user = getUserRepository().get(username);
             String userDataJSON = getObjectMapper().writeValueAsString(user);
-
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
@@ -48,6 +44,7 @@ public class UserController extends Controller{
     }
 
     public Response createUser(String body) {
+
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
@@ -68,10 +65,11 @@ public class UserController extends Controller{
     }
 
 
-    public Response updateUser(String body) {
+    public Response updateUser(String username, String body) {
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
+            newUser.setUsername(username);
             getUserRepository().update(newUser);
             return new Response(
                     HttpStatus.CREATED,
@@ -86,6 +84,11 @@ public class UserController extends Controller{
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
+    }
+
+    public Response loginUser(username, password){
+
+        return null;
     }
 
 }

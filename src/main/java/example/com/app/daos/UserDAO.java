@@ -31,14 +31,15 @@ public class UserDAO  {
 
 
     public void create(User user) {
-        String insertStmt = "INSERT INTO users (name, password) VALUES (?, ?);";
+        String insertStmt = "INSERT INTO users (username, password) VALUES (?, ?);";
+
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.execute();
             getConnection().close();
-            //setCitiesCache(null);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,19 +48,23 @@ public class UserDAO  {
 
     public User read(String userName) {
 
-        String selectStmt = "SELECT name, bio, image FROM users WHERE name = ?;";
+        String selectStmt = "SELECT name, bio, image FROM users WHERE username = ?;";
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            singleUserCache = new User(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
+            preparedStatement.setString(1, userName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    singleUserCache = new User(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
+                }
+            }
             getConnection().close();
+
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return singleUserCache;
     }
-
 
     public void update(User user) {
 

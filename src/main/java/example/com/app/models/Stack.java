@@ -1,4 +1,4 @@
-package example.com.app.models;
+/*package example.com.app.models;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,3 +24,4 @@ public class Stack {
 
     }
 }
+*/
