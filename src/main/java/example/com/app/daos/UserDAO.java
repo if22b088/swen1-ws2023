@@ -15,10 +15,10 @@ public class UserDAO  {
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
     Connection connection;
-
+/*
     @Setter(AccessLevel.PRIVATE)
     ArrayList<User> usersCache;
-
+*/
 
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
@@ -78,6 +78,45 @@ public class UserDAO  {
             preparedStatement.executeUpdate();
             getConnection().close();
             //setCitiesCache(null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void login(User user) {
+        String selectStmt = "SELECT username, password FROM users WHERE username = ?;";
+
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
+            preparedStatement.setString(1, user.getUsername());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    singleUserCache = new User(resultSet.getString(1), resultSet.getString(2));
+                }
+            }
+            getConnection().close();
+            if(singleUserCache.getPassword().equals(user.getPassword())) {
+
+                String insertStmt = "INSERT INTO users (username, password) VALUES (?, ?);";
+
+                try {
+                    //todo: insert SESSION/TOKEN?
+                    PreparedStatement preparedStatement2 = getConnection().prepareStatement(insertStmt);
+                    preparedStatement.setString(1, user.getUsername());
+                    preparedStatement.setString(2, user.getPassword());
+                    preparedStatement2.execute();
+                    getConnection().close();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            getConnection().close();
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

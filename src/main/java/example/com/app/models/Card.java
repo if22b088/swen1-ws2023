@@ -5,12 +5,19 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class Card {
+public class Card {
+    private String cardID;
     private String cardName;
-    private String elementType;
-    private String damage;
-    private Boolean inDeck;
+    private String cardType;
+    private int damage;
     private Boolean traded;
+    public Card() {}
 
-    public abstract void attack();
+    public Card (String cardID, String cardName, String cardType, int damage) {
+        this.cardID = cardID;
+        this.cardName = cardName;
+        this.cardType =cardType;
+        this.damage = damage;
+    }
+    //public abstract void attack();
 }

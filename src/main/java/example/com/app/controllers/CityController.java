@@ -2,7 +2,6 @@ package example.com.app.controllers;
 
 import example.com.app.models.City;
 import example.com.app.repositories.CityRepository;
-import example.com.app.services.CityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import example.com.http.ContentType;
 import example.com.http.HttpStatus;

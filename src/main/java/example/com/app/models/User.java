@@ -39,7 +39,7 @@ public class User {
         this.password = password;
         this.coins = 20;
        // this.userStack = new Stack();
-        this.userDeck = new Deck();
+        //this.userDeck = new Deck();
         this.stats = 100;
     }
 

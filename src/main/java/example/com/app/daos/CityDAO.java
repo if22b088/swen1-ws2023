@@ -47,9 +47,9 @@ public class CityDAO {
             return citiesCache;
         }
 
-        String insertStmt = "SELECT name, population from cities;";
+        String selectStmt = "SELECT name, population from cities;";
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
+            PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()) {

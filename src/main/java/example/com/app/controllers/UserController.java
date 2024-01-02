@@ -43,8 +43,8 @@ public class UserController extends Controller{
         }
     }
 
+    //creates user if does not exist
     public Response createUser(String body) {
-
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
@@ -65,6 +65,7 @@ public class UserController extends Controller{
     }
 
 
+    //updates name, bio, image for specific user
     public Response updateUser(String username, String body) {
         try {
             System.out.println(body);
@@ -86,9 +87,26 @@ public class UserController extends Controller{
         }
     }
 
-    public Response loginUser(username, password){
 
-        return null;
+    //logs in with specific user
+    public Response loginUser(String body){
+        try {
+            System.out.println(body);
+            User newUser = getObjectMapper().readValue(body, User.class);
+            getUserRepository().login(newUser);
+            return new Response(
+                    HttpStatus.CREATED,
+                    ContentType.JSON,
+                    "{ \"data\": " + body + ", \"error\": null }"
+            );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "{ \"error\": \"Internal Server Error\", \"data\": null }"
+            );
+        }
     }
 
 }

@@ -22,5 +22,7 @@ public class UserRepository {
 
     public void update(User user) { getUserDAO().update(user); }
 
+    public void login(User user) { getUserDAO().login(user); }
+
     // public void remove(User type) {}
 }
