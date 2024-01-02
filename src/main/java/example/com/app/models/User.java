@@ -19,6 +19,7 @@ public class User {
     private int coins;
     //private Stack userStack;
     private Deck userDeck;
+    private String token;
     private int stats;
     @JsonAlias({"Bio"})
     private String bio;
@@ -28,8 +29,15 @@ public class User {
 
     public User() {}
 
-    public User (String username, String bio, String image) {
+    public User ( String name, String bio, String image) {
+        this.username = name;
+        this.bio = bio;
+        this.image = image;
+    }
+    public User (String username, String name, String token, String bio, String image) {
         this.username = username;
+        this.name = name;
+        this.token = token;
         this.bio = bio;
         this.image = image;
     }

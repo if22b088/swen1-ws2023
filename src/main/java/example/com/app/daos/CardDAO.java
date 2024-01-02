@@ -110,7 +110,7 @@ public class CardDAO {
     public void updateDeck(Deck deck, String token) {
         // use CTE (common table expression)
         //TODO fix this query
-        String insertStmt = "WITH UserDeck AS (" +
+        String updateStmt = "WITH UserDeck AS (" +
                 "    SELECT UserID, DeckID FROM Users WHERE Token = ?" +
                 ") " +
                 "UPDATE Decks " +
@@ -123,7 +123,7 @@ public class CardDAO {
                 "WHERE Decks.DeckID = UserDeck.DeckID";
 
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
+            PreparedStatement preparedStatement = getConnection().prepareStatement(updateStmt);
             preparedStatement.setString(1, token);
 
             preparedStatement.execute();

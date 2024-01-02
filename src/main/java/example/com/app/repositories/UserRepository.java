@@ -16,13 +16,13 @@ public class UserRepository {
     public UserRepository(UserDAO userDAO) { setUserDAO(userDAO); }
 
 
-    public void add(User user) { getUserDAO().create(user); }
+    public void addUser(User user) { getUserDAO().create(user); }
 
-    public User get(String username) { return getUserDAO().read(username); }
+    public User getUser(String username, String token) { return getUserDAO().read(username, token); }
 
-    public void update(User user) { getUserDAO().update(user); }
+    public void updateUser(User user, String token) { getUserDAO().update(user, token); }
 
-    public void login(User user) { getUserDAO().login(user); }
+    public String loginUser(User user) { return getUserDAO().login(user); }
 
     // public void remove(User type) {}
 }

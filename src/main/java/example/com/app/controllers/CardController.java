@@ -29,10 +29,9 @@ public class CardController extends Controller {
         setCardRepository(cardRepository);
     }
 
-
+//todo check for admin
     //gets all cards from user (from that users stack) who is associated with token
     public Response getCards(String token) {
-
         try {
             //if a token is set/exists
             if (token != null) {

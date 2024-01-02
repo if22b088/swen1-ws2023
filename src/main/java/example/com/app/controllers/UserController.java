@@ -14,6 +14,9 @@ import example.com.server.Response;
 
 import java.util.List;
 
+
+//todo add token bei update und get user
+//todo add status code responses
 public class UserController extends Controller{
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
@@ -24,15 +27,32 @@ public class UserController extends Controller{
         setUserRepository(userRepository);
     }
 
-    public Response getUserByUsername(String username) {
+    public Response getUserByUsername(String username,String token) {
         try {
-            User user = getUserRepository().get(username);
-            String userDataJSON = getObjectMapper().writeValueAsString(user);
-            return new Response(
-                    HttpStatus.OK,
-                    ContentType.JSON,
-                    "{ \"data\": " + userDataJSON + ", \"error\": null }"
-            );
+            if (token != null) {
+                User user = getUserRepository().getUser(username, token);
+                String userDataJSON = getObjectMapper().writeValueAsString(user);
+                if (user != null) {
+                    return new Response(
+                            HttpStatus.OK,
+                            ContentType.JSON,
+                            "{ \"data\": " + userDataJSON + ", \"error\": null }"
+                    );
+                } else {
+                    return new Response(
+                            HttpStatus.NOT_FOUND,
+                            ContentType.JSON,
+                            "{ \"error\": \"User not found\", \"data\": null }"
+                    );
+                }
+
+            } else {
+                return new Response(
+                        HttpStatus.UNAUTHORIZED,
+                        ContentType.JSON,
+                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                );
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new Response(
@@ -48,7 +68,7 @@ public class UserController extends Controller{
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
-            getUserRepository().add(newUser);
+            getUserRepository().addUser(newUser);
             return new Response(
                     HttpStatus.CREATED,
                     ContentType.JSON,
@@ -66,17 +86,27 @@ public class UserController extends Controller{
 
 
     //updates name, bio, image for specific user
-    public Response updateUser(String username, String body) {
+    public Response updateUser(String username, String body, String token) {
         try {
-            System.out.println(body);
-            User newUser = getObjectMapper().readValue(body, User.class);
-            newUser.setUsername(username);
-            getUserRepository().update(newUser);
-            return new Response(
-                    HttpStatus.CREATED,
-                    ContentType.JSON,
-                    "{ \"data\": " + body + ", \"error\": null }"
-            );
+            if (token != null) {
+                System.out.println(body);
+                User newUser = getObjectMapper().readValue(body, User.class);
+                newUser.setUsername(username);
+
+                getUserRepository().updateUser(newUser, token);
+
+                return new Response(
+                        HttpStatus.CREATED,
+                        ContentType.JSON,
+                        "{ \"data\": \"User successfully updated\", \"error\": null }"
+                );
+            }else {
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.JSON,
+                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                );
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new Response(
@@ -93,11 +123,11 @@ public class UserController extends Controller{
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
-            getUserRepository().login(newUser);
+            String token = getUserRepository().loginUser(newUser);
             return new Response(
-                    HttpStatus.CREATED,
+                    HttpStatus.OK,
                     ContentType.JSON,
-                    "{ \"data\": " + body + ", \"error\": null }"
+                    "{ \"data\": " + token + ", \"error\": null }"
             );
         } catch (JsonProcessingException e) {
             e.printStackTrace();

@@ -46,27 +46,29 @@ public class UserDAO  {
     }
 
 
-    public User read(String userName) {
+    public User read(String userName, String token) {
 
-        String selectStmt = "SELECT name, bio, image FROM users WHERE username = ?;";
+        String selectStmt = "SELECT username, name, token, bio, image FROM users WHERE username = ?;";
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
             preparedStatement.setString(1, userName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    singleUserCache = new User(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
+                    singleUserCache = new User(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
                 }
             }
             getConnection().close();
-
-
+            if (!singleUserCache.getToken().equals( token)) {
+                return null;
+            }
+           return singleUserCache;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return singleUserCache;
+        return null;
     }
 
-    public void update(User user) {
+    public void update(User user, String token) {
 
         String updateStmt = "UPDATE users SET name = ?, bio = ?, image = ? WHERE username = ?;";
         try {
@@ -83,7 +85,7 @@ public class UserDAO  {
         }
     }
 
-    public void login(User user) {
+    public String login(User user) {
         String selectStmt = "SELECT username, password FROM users WHERE username = ?;";
 
         try {
@@ -97,15 +99,19 @@ public class UserDAO  {
             getConnection().close();
             if(singleUserCache.getPassword().equals(user.getPassword())) {
 
-                String insertStmt = "INSERT INTO users (username, password) VALUES (?, ?);";
+                String token = user.getUsername() + "-mtcgToken";
+
+                String updateStmt = "UPDATE Users SET Token = ? WHERE Username = ?";
 
                 try {
-                    //todo: insert SESSION/TOKEN?
-                    PreparedStatement preparedStatement2 = getConnection().prepareStatement(insertStmt);
-                    preparedStatement.setString(1, user.getUsername());
-                    preparedStatement.setString(2, user.getPassword());
+
+                    PreparedStatement preparedStatement2 = getConnection().prepareStatement(updateStmt);
+                    preparedStatement.setString(1, token);
+                    preparedStatement.setString(2, user.getUsername());
                     preparedStatement2.execute();
                     getConnection().close();
+
+                    return token;
 
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -116,10 +122,10 @@ public class UserDAO  {
 
             getConnection().close();
 
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 

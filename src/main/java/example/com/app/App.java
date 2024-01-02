@@ -61,7 +61,7 @@ public class App implements ServerApp {
                     String replacement = "";
                     String username= source.replace(target, replacement);
 
-                    return this.userController.getUserByUsername(username);
+                    return this.userController.getUserByUsername(username,request.getToken());
                 } else if (request.getPathname().equals("/cards")) {
                     return this.cardController.getCards(request.getToken());
                 } else if (request.getPathname().equals("/deck")) {
@@ -111,14 +111,14 @@ public class App implements ServerApp {
                     String replacement = "";
                     String username= master.replace(target, replacement);
 
-                    return this.userController.updateUser(username,request.getBody());
+                    return this.userController.updateUser(username,request.getBody(),request.getToken());
                     /*
                     String body = request.getBody();
                     return this.userController.updateUser(body);
                     */
                 } else if (request.getPathname().equals("/deck")) {
                     String body = request.getBody();
-                    return this.cardController.updateDeck(body,request.getToken());g
+                    return this.cardController.updateDeck(body,request.getToken());
                 }
                 break;
             case DELETE:
