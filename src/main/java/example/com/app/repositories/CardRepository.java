@@ -52,6 +52,15 @@ public class CardRepository {
 
     }
 
+    //todo finish buypackage
+
+    public boolean buyPackage(String body, User user ) {
+
+        getCardDAO().buyPackage(body,user);
+
+        return false;
+    }
+
 
 
     //public void update(User user) { getUserDAO().update(user); }

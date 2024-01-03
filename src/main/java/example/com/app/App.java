@@ -10,6 +10,10 @@ import example.com.app.controllers.CardController;
 import example.com.app.daos.CardDAO;
 import example.com.app.repositories.CardRepository;
 
+import example.com.app.controllers.PackageController;
+import example.com.app.daos.PackageDAO;
+import example.com.app.repositories.PackageRepository;
+
 
 import example.com.app.services.DatabaseService;
 import example.com.http.ContentType;
@@ -30,6 +34,9 @@ public class App implements ServerApp {
     private UserController userController;
     @Setter(AccessLevel.PRIVATE)
     private CardController cardController;
+    @Setter(AccessLevel.PRIVATE)
+    private PackageController packageController;
+
 
     public App() {
         DatabaseService databaseService = new DatabaseService();
@@ -85,13 +92,20 @@ public class App implements ServerApp {
                 } else if (request.getPathname().equals("/sessions")) {
                     String body = request.getBody();
                     return this.userController.loginUser(body);
-                }/* else if (request.getPathname().equals("/packages")) {
+                } else if (request.getPathname().equals("/packages")) {
                     String body = request.getBody();
-                    return this.cityController.createCity(body);
+                    return this.cardController.createPackage(body,request.getToken());
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
-                    return this.cityController.createCity(body);
-                } else if (request.getPathname().equals("/battles")) {
+
+                    //get the username from the path
+                    String source = request.getPathname();
+                    String target = "/users/";
+                    String replacement = "";
+                    String username= source.replace(target, replacement);
+
+                    return this.packageController.buyPackage(body, request.getToken());
+                } /*else if (request.getPathname().equals("/battles")) {
                     String body = request.getBody();
                     return this.cityController.createCity(body);
                 } else if (request.getPathname().equals("/tradings")) {

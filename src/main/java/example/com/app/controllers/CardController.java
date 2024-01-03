@@ -1,11 +1,11 @@
 package example.com.app.controllers;
 
-
+import example.com.app.daos.UserDAO;
 import example.com.app.models.Card;
 import example.com.app.models.Deck;
 import example.com.app.models.User;
 import example.com.app.repositories.CardRepository;
-
+import example.com.app.repositories.UserRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import example.com.http.ContentType;
@@ -22,7 +22,6 @@ public class CardController extends Controller {
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
     private CardRepository cardRepository;
-
 
 
     public CardController(CardRepository cardRepository) {
@@ -106,7 +105,6 @@ public class CardController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
-
     }
 
     //upates the 4 cards of a users deck
@@ -148,6 +146,26 @@ public class CardController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
-
     }
+
+
+    //todo: finish createPakage
+    public Response createPackage(String body, String token) {
+        try {
+            List<Card> pack = null;
+            for (int i = 0; i < 5; i++) {
+                getObjectMapper().readValue(body, Card.class);
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "{ \"error\": \"Internal Server Error\", \"data\": null }"
+            );
+        }
+        return null;
+    }
+
+
 }

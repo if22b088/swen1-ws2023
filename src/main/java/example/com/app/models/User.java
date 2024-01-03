@@ -11,9 +11,13 @@ import lombok.Setter;
 @Setter
 
 public class User {
+
+    private int userID;
     @JsonAlias({"Name"})
     private String name;
+    @JsonAlias({"Username"})
     private String username;
+    @JsonAlias({"Password"})
     private String password;
 
     private int coins;
@@ -25,7 +29,9 @@ public class User {
     private String bio;
     @JsonAlias({"Image"})
     private String image;
-
+    private int elo;
+    private int wins;
+    private int losses;
 
     public User() {}
 
@@ -34,12 +40,17 @@ public class User {
         this.bio = bio;
         this.image = image;
     }
-    public User (String username, String name, String token, String bio, String image) {
+    public User (int userID, String username, String name, String token, String bio, String image, int coins, int elo, int wins, int losses) {
+        this.userID = userID;
         this.username = username;
         this.name = name;
         this.token = token;
         this.bio = bio;
         this.image = image;
+        this.coins = coins;
+        this.elo = elo;
+        this.wins = wins;
+        this.losses = losses;
     }
 
     public User(String username, String password) {

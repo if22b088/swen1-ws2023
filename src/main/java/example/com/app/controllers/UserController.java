@@ -45,7 +45,6 @@ public class UserController extends Controller{
                             "{ \"error\": \"User not found\", \"data\": null }"
                     );
                 }
-
             } else {
                 return new Response(
                         HttpStatus.UNAUTHORIZED,
@@ -68,12 +67,20 @@ public class UserController extends Controller{
         try {
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
-            getUserRepository().addUser(newUser);
-            return new Response(
-                    HttpStatus.CREATED,
-                    ContentType.JSON,
-                    "{ \"data\": " + body + ", \"error\": null }"
-            );
+            boolean created = getUserRepository().addUser(newUser);
+            if (created) {
+                return new Response(
+                        HttpStatus.CREATED,
+                        ContentType.JSON,
+                        "{ \"data\": " + body + ", \"error\": null }"
+                );
+            } else {
+                return new Response(
+                        HttpStatus.CONFLICT,
+                        ContentType.JSON,
+                        "{ \"error\": \"User with same username already registered\", \"data\": null }"
+                );
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new Response(
@@ -124,11 +131,19 @@ public class UserController extends Controller{
             System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
             String token = getUserRepository().loginUser(newUser);
-            return new Response(
-                    HttpStatus.OK,
-                    ContentType.JSON,
-                    "{ \"data\": " + token + ", \"error\": null }"
-            );
+            if (token != null) {
+                return new Response(
+                        HttpStatus.OK,
+                        ContentType.JSON,
+                        "{ \"data\": " + token + ", \"error\": null }"
+                );
+            } else {
+                return new Response(
+                        HttpStatus.UNAUTHORIZED,
+                        ContentType.JSON,
+                        "{ \"error\": \"Invalid username/password provided\", \"data\": null }"
+                );
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new Response(
@@ -138,5 +153,4 @@ public class UserController extends Controller{
             );
         }
     }
-
 }
