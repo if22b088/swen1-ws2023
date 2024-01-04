@@ -23,6 +23,7 @@ import lombok.Setter;
 import example.com.server.Request;
 import example.com.server.Response;
 import example.com.server.ServerApp;
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Pack;
 
 
 public class App implements ServerApp {
@@ -53,6 +54,10 @@ public class App implements ServerApp {
         CardDAO cardDAO = new CardDAO(databaseService.getConnection());
         CardRepository cardRepository = new CardRepository(cardDAO);
         setCardController(new CardController(cardRepository));
+
+        PackageDAO packageDAO = new PackageDAO(databaseService.getConnection());
+        PackageRepository packageRepository = new PackageRepository(packageDAO);
+        setPackageController(new PackageController(cardRepository,userRepository));
 
     }
 
@@ -94,16 +99,17 @@ public class App implements ServerApp {
                     return this.userController.loginUser(body);
                 } else if (request.getPathname().equals("/packages")) {
                     String body = request.getBody();
-                    return this.cardController.createPackage(body,request.getToken());
+
+                    return this.packageController.createPackage("admin", body, request.getToken());
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
-
+/*not in use because token is used
                     //get the username from the path
                     String source = request.getPathname();
                     String target = "/users/";
                     String replacement = "";
                     String username= source.replace(target, replacement);
-
+*/
                     return this.packageController.buyPackage(body, request.getToken());
                 } /*else if (request.getPathname().equals("/battles")) {
                     String body = request.getBody();

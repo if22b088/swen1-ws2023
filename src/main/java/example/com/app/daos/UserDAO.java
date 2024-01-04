@@ -53,7 +53,7 @@ public class UserDAO  {
 
 
     public User read(String userName, String token) {
-
+        System.out.println(userName);
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
@@ -67,10 +67,11 @@ public class UserDAO  {
                             resultSet.getInt(9), resultSet.getInt(10));
                 }
             }
-            getConnection().close();
+
             if (!singleUserCache.getToken().equals( token)) {
                 return null;
             }
+            getConnection().close();
            return singleUserCache;
         } catch (SQLException e) {
             e.printStackTrace();

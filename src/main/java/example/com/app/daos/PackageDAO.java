@@ -1,16 +1,15 @@
 package example.com.app.daos;
 
 import example.com.app.models.User;
+import example.com.app.models.Card;
 import example.com.app.models.Package;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PackageDAO  {
     @Setter(AccessLevel.PRIVATE)
@@ -26,12 +25,71 @@ public class PackageDAO  {
     Package singlePackageCache;
 
 
-    public PackageDAO(Connection connection) {setConnection(connection);
+    public PackageDAO(Connection connection) {setConnection(connection);}
+
+    public int createPackage(List<Card> cards) {
+        try {
+            // disable autocommit to performa a transaction
+            getConnection().setAutoCommit(false);
+
+            //create the cards in cards table
+            String insertStmt = "INSERT INTO cards (cardID, cardName, Damage) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
+
+            //create a new entry in cards table for each card in the pack
+            for (Card card : cards) {
+                preparedStatement.setString(1, card.getCardID());
+                preparedStatement.setString(2, card.getCardName());
+                preparedStatement.setInt(3, card.getDamage());
+
+                preparedStatement.executeUpdate();
+            }
+
+            //create the package by creating a new entry in database packages
+            insertStmt = "INSERT INTO packages (card1 ,card2 ,card3 ,card4 ,card5) VALUES (?, ?, ?, ?, ?)";
+            preparedStatement = getConnection().prepareStatement(insertStmt);
+
+            int parameterIndex = 1;
+            for (Card card : cards) {
+                preparedStatement.setString(parameterIndex, card.getCardID());
+                parameterIndex++;
+            }
+
+            preparedStatement.executeUpdate();
+            //commit transaction
+            getConnection().commit();
+            getConnection().close();
+            return 201;
+        }  catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    public Boolean checkIfPackageExists() {
+        try {
+            String selectStmt = "SELECT cardID,card1,card2,card3,card4,card5 FROM packages LIMIT ?";
+
+           PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
+            preparedStatement.setInt(1, 1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                singlePackageCache = new Package(resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getString(5),
+                        resultSet.getString(6));
+            }
+            if (singlePackageCache != null) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
 
     //todo finish buyPackage
-    public boolean buyPackage(User user) {
+    public String[] buyPackage(User user) {
 
         try {
             // disable autocommit to performa a transaction
@@ -75,33 +133,22 @@ public class PackageDAO  {
                     singlePackageCache.getCard3(),singlePackageCache.getCard4(),
                     singlePackageCache.getCard5()};
 
-
             for (String cardID : cardsTmp) {
-                // Set parameters for the prepared statement
                 preparedStatement.setInt(1, user.getUserID());
                 preparedStatement.setString(2, cardID);
 
-                // Execute the query
                 preparedStatement.executeUpdate();
             }
 
-
-
-
             //commit transaction
             getConnection().commit();
-
             getConnection().close();
 
-
-            //setCitiesCache(null);
+            //return array of cardIDs
+            return cardsTmp;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
-        return false;
     }
-
 }

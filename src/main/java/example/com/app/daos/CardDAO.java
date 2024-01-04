@@ -134,8 +134,4 @@ public class CardDAO {
         }
     }
 
-
-    public void buyPackage(String body, User user) {
-
-    }
 }

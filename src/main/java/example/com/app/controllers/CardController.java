@@ -34,7 +34,7 @@ public class CardController extends Controller {
         try {
             //if a token is set/exists
             if (token != null) {
-                List<Card> cardData = getCardRepository().getAll(token);
+                List<Card> cardData = getCardRepository().getCards(token);
                 String cardDataJSON = getObjectMapper().writeValueAsString(cardData);
                 //if user has cards
                 if (cardData != null) {
@@ -67,6 +67,12 @@ public class CardController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
+    }
+
+
+    //not in use (cardRepository.getSingleCard(cardID) is used in packageRepostiory  (buyPackage))
+    public Card getSingleCard(String cardID){
+        return cardRepository.getSingleCard(cardID);
     }
 
     //gets Deck (four cards) from user who is associated with token
@@ -149,23 +155,7 @@ public class CardController extends Controller {
     }
 
 
-    //todo: finish createPakage
-    public Response createPackage(String body, String token) {
-        try {
-            List<Card> pack = null;
-            for (int i = 0; i < 5; i++) {
-                getObjectMapper().readValue(body, Card.class);
-            }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new Response(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ContentType.JSON,
-                    "{ \"error\": \"Internal Server Error\", \"data\": null }"
-            );
-        }
-        return null;
-    }
+
 
 
 }

@@ -1,14 +1,18 @@
 package example.com.app.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class Card {
+    @JsonAlias({"Id"})
     private String cardID;
+    @JsonAlias({"Name"})
     private String cardName;
-    private String cardType;
+    //private String cardType;
+    @JsonAlias({"Damage"})
     private int damage;
     private Boolean traded;
     public Card() {}
@@ -16,7 +20,7 @@ public class Card {
     public Card (String cardID, String cardName, String cardType, int damage) {
         this.cardID = cardID;
         this.cardName = cardName;
-        this.cardType =cardType;
+        //this.cardType = cardType;
         this.damage = damage;
     }
     //public abstract void attack();

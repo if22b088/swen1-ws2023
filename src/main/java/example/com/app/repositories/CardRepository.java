@@ -22,7 +22,7 @@ public class CardRepository {
     public CardRepository(CardDAO cardDAO) { setCardDAO(cardDAO); }
 
     //gets all the cards from a user (the stack)
-    public ArrayList<Card> getAll(String token) { return getCardDAO().getAllCards(token); }
+    public ArrayList<Card> getCards(String token) { return getCardDAO().getAllCards(token); }
 
     //gets all the cards of a users deck
     public ArrayList<Card> getDeck(String token) {
@@ -35,6 +35,9 @@ public class CardRepository {
             deck.add(getCardDAO().getSingleCard(cards.get(i)));
         }
         return deck;
+    }
+    public Card getSingleCard(String cardID) {
+        return getCardDAO().getSingleCard(cardID);
     }
 
     //updates the deck of the user with a specific token
@@ -51,17 +54,6 @@ public class CardRepository {
         getCardDAO().updateDeck(deck,token);
 
     }
-
-    //todo finish buypackage
-
-    public boolean buyPackage(String body, User user ) {
-
-        getCardDAO().buyPackage(body,user);
-
-        return false;
-    }
-
-
 
     //public void update(User user) { getUserDAO().update(user); }
 
