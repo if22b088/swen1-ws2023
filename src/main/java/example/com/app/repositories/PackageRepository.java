@@ -25,7 +25,7 @@ public class PackageRepository {
     public PackageRepository(PackageDAO packageDAO) { setPackageDAO(packageDAO); }
 
 
-    public int createPackage(List<Card> cards) {
+    public int createPackage(ArrayList<Card> cards) {
         return getPackageDAO().createPackage(cards);
     }
     public String[] buyPackage( User user) {

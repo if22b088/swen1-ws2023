@@ -30,13 +30,18 @@ public class UserDAO  {
     }
 
 
+    //creates user in table Users
     public boolean create(User user) {
-        String insertStmt = "INSERT INTO users (username, password) VALUES (?, ?);";
+        String insertStmt = "INSERT INTO users (username, password, coins, elo, wins, losses) VALUES (?, ?, ?, ?, ?, ?);";
 
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setInt(3, 20);
+            preparedStatement.setInt(4, 100);
+            preparedStatement.setInt(5, 0);
+            preparedStatement.setInt(6, 0);
             preparedStatement.execute();
             //todo fix connection close
             //getConnection().close();
@@ -52,8 +57,10 @@ public class UserDAO  {
 
 
 
-    public User read(String userName, String token) {
+    public User getUser(String userName, String token) {
+
         System.out.println(userName);
+        System.out.println(token);
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
@@ -67,12 +74,42 @@ public class UserDAO  {
                             resultSet.getInt(9), resultSet.getInt(10));
                 }
             }
-
+            System.out.println(singleUserCache.getUsername());
             if (!singleUserCache.getToken().equals( token)) {
                 return null;
             }
-            getConnection().close();
+            //todo fix connection close
+            //getConnection().close();
            return singleUserCache;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public User getUserByToken(String token) {
+
+        String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE token = ?;";
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
+            preparedStatement.setString(1, token);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    singleUserCache = new User(resultSet.getInt(1),resultSet.getString(2),
+                            resultSet.getString(3), resultSet.getString(4),
+                            resultSet.getString(5), resultSet.getString(6),
+                            resultSet.getInt(7), resultSet.getInt(8),
+                            resultSet.getInt(9), resultSet.getInt(10));
+                }
+            }
+            System.out.println(singleUserCache.getUsername());
+            if (!singleUserCache.getToken().equals( token)) {
+                return null;
+            }
+            //todo fix connection close
+            //getConnection().close();
+            return singleUserCache;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -89,7 +126,8 @@ public class UserDAO  {
             preparedStatement.setString(3, user.getImage());
             preparedStatement.setString(4, user.getUsername());
             preparedStatement.executeUpdate();
-            getConnection().close();
+            //todo fix connection close
+            //getConnection().close();
             //setCitiesCache(null);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,7 +145,8 @@ public class UserDAO  {
             preparedStatement.setString(3, user.getImage());
             preparedStatement.setString(4, user.getUsername());
             preparedStatement.executeUpdate();
-            getConnection().close();
+            //todo fix connection close
+            //getConnection().close();
             //setCitiesCache(null);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,11 +168,9 @@ public class UserDAO  {
             if(singleUserCache.getPassword().equals(user.getPassword())) {
 
                 String token = user.getUsername() + "-mtcgToken";
-
                 String updateStmt = "UPDATE Users SET token = ? WHERE username = ?";
 
                 try {
-
                     PreparedStatement preparedStatement2 = getConnection().prepareStatement(updateStmt);
                     preparedStatement2.setString(1, token);
                     preparedStatement2.setString(2, user.getUsername());

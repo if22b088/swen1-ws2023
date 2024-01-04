@@ -36,16 +36,18 @@ public class PackageController extends Controller {
     @Getter(AccessLevel.PRIVATE)
     private PackageRepository packageRepository;
 
-    public PackageController(CardRepository cardRepository, UserRepository userRepository) {
+    public PackageController(CardRepository cardRepository, UserRepository userRepository, PackageRepository packageRepository) {
         setCardRepository(cardRepository);
         setUserRepository(userRepository);
+        setPackageRepository((packageRepository));
+
     }
 
     //todo: finish createPackage
-    public Response createPackage(String username, String body, String token) {
+    public Response createPackage(String body, String token) {
         try {
             //check if user is admin
-            User user = getUserRepository().getUser(username, token);
+            User user = getUserRepository().getUser("admin", token);
             //check if user exists/token is valid by check if username is set
             if (user.getUsername().isEmpty()) {
                 return new Response(
@@ -63,19 +65,22 @@ public class PackageController extends Controller {
                         "{ \"error\": \"Provided user is not \"admin\", \"data\": null }"
                 );
             }
-            //List<Card> pack = null;
-            //pack = getObjectMapper().readValue(body, Card.class);
-            List<Card> pack = getObjectMapper().readValue(body, new TypeReference<List<Card>>() {});
 
-            //fills the pack cardlist with cards from the body and checks if each of the cards already exists in the db
+            ArrayList<Card> pack = getObjectMapper().readValue(body, getObjectMapper().getTypeFactory().constructCollectionType(List.class, Card.class));
+
+
+
+            //fills the cardlist pack with cards from the body and checks if each of the cards already exists in the db
             for (Card card : pack) {
 
                 System.out.println(card.getCardName());
+                System.out.println(card.getDamage());
+
+
                 //checks whether the card exists by trying to retrieve the card from the db
                 Card cardTemp = getCardRepository().getSingleCard(card.getCardID());
-                if (!cardTemp.getCardID().isEmpty()) {
-                    pack.add(getObjectMapper().readValue(body, Card.class));
-                } else {
+                //if the card does not yet exist add it to the pack
+                if (cardTemp != null)  {
                     return new Response(
                             HttpStatus.CONFLICT,
                             ContentType.JSON,
@@ -94,9 +99,9 @@ public class PackageController extends Controller {
                 );
             } else {
                 return new Response(
-                        HttpStatus.OK,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
                         ContentType.JSON,
-                        "{ \"data\": " + body + "The deck has been successfully configured" + ", \"error\": null }"
+                        "{ \"error\": \"Internal Server Error\", \"data\": null }"
                 );
             }
         } catch (JsonProcessingException e) {
@@ -113,7 +118,7 @@ public class PackageController extends Controller {
     public Response buyPackage(String body, String token) {
 
         try {
-            User user = getUserRepository().getUser(body,token);
+            User user = getUserRepository().getUserByToken(token);
             boolean packExists = getPackageRepository().checkIfPackageAvailable();
             if (!packExists) {
                 return new Response(

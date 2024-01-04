@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Setter
 public class Package {
 
-    private String cardID;
+    private int packageID;
     private String card1;
     private String card2;
     private String card3;
@@ -17,8 +17,8 @@ public class Package {
     private String card5;
 
 
-    public Package(String cardID, String card1, String card2, String card3, String card4, String card5) {
-        this.cardID = cardID;
+    public Package(int packageID, String card1, String card2, String card3, String card4, String card5) {
+        this.packageID = packageID;
         this.card1 = card1;
         this.card2 = card2;
         this.card3 = card3;

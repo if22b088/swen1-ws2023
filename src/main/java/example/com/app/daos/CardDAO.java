@@ -33,7 +33,7 @@ public class CardDAO {
     //gets all cards from a user that has a specific token
     public ArrayList <Card> getAllCards(String token) {
         ArrayList <Card> cards =new ArrayList();
-        String selectStmt = "SELECT c.CardID, c.CardName, c.CardType c.Damage FROM Cards c " +
+        String selectStmt = "SELECT c.CardID, c.CardName, c.Damage FROM Cards c " +
                 "JOIN Stacks s ON c.CardID = s.CardID " +
                 "JOIN Users u ON s.UserID = u.UserID " +
                 "WHERE u.Token = ?";
@@ -45,10 +45,10 @@ public class CardDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()) {
-                Card card = new Card(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getInt(4));
+                Card card = new Card(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(4));
                 cards.add(card);
             }
-            getConnection().close();
+            //getConnection().close();
             return cards;
         }
 
@@ -76,7 +76,7 @@ public class CardDAO {
             for(int i = 0; i < 4; i++ ) {
                 deck.add(resultSet.getString(i));
             }
-            getConnection().close();
+            //getConnection().close();
             return deck;
         }
         catch (SQLException e) {
@@ -87,19 +87,29 @@ public class CardDAO {
 
     //get a single card based on cardID
     public Card getSingleCard(String cardID) {
-        String selectStmt = "SELECT CardName, CardType, Damage" +
-                "FROM Cards" +
-                "WHERE cardID = ?";
+        String selectStmt = "SELECT CardName, Damage" +
+                " FROM Cards" +
+                " WHERE cardID = ?";
 
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
             preparedStatement.setString(1, cardID);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            Card card = new Card(cardID, resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3));
 
-            getConnection().close();
-            return card;
+
+            if (resultSet.next()) {
+                // Move the cursor to the first row of the result set
+                Card card = new Card(cardID, resultSet.getString("CardName"), resultSet.getInt("Damage"));
+                return card;
+            } else {
+                // No rows found for the given cardID
+                return null;
+            }
+            //Card card = new Card(cardID, resultSet.getString(1), resultSet.getInt(2));
+            //todo fix close
+            //getConnection().close();
+            //return card;
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -127,11 +137,10 @@ public class CardDAO {
             preparedStatement.setString(1, token);
 
             preparedStatement.execute();
-            getConnection().close();
+            //getConnection().close();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -40,6 +40,7 @@ public class App implements ServerApp {
 
 
     public App() {
+
         DatabaseService databaseService = new DatabaseService();
 
         /*
@@ -57,8 +58,7 @@ public class App implements ServerApp {
 
         PackageDAO packageDAO = new PackageDAO(databaseService.getConnection());
         PackageRepository packageRepository = new PackageRepository(packageDAO);
-        setPackageController(new PackageController(cardRepository,userRepository));
-
+        setPackageController(new PackageController(cardRepository,userRepository,packageRepository));
     }
 
     public Response handleRequest(Request request) {
@@ -100,7 +100,7 @@ public class App implements ServerApp {
                 } else if (request.getPathname().equals("/packages")) {
                     String body = request.getBody();
 
-                    return this.packageController.createPackage("admin", body, request.getToken());
+                    return this.packageController.createPackage(body, request.getToken());
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
 /*not in use because token is used
@@ -145,7 +145,6 @@ public class App implements ServerApp {
                 //TODO: add PUT for /tradings/{tradingdealid}
                 break;
         }
-
         return new Response(HttpStatus.NOT_FOUND, ContentType.JSON, "{ \"error\": \"Not Found\", \"data\": null }");
     }
 }

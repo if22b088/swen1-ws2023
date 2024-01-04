@@ -58,26 +58,29 @@ public class PackageDAO  {
             preparedStatement.executeUpdate();
             //commit transaction
             getConnection().commit();
-            getConnection().close();
+            //getConnection().close();
             return 201;
         }  catch (SQLException e) {
             throw new RuntimeException(e);
+
         }
     }
 
     public Boolean checkIfPackageExists() {
         try {
-            String selectStmt = "SELECT cardID,card1,card2,card3,card4,card5 FROM packages LIMIT ?";
+            String selectStmt = "SELECT packageID,card1,card2,card3,card4,card5 FROM packages LIMIT ?";
 
            PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
             preparedStatement.setInt(1, 1);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                singlePackageCache = new Package(resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getString(6));
+                if (resultSet.next()) {
+                    singlePackageCache = new Package(resultSet.getInt(1),
+                            resultSet.getString(2),
+                            resultSet.getString(3),
+                            resultSet.getString(4),
+                            resultSet.getString(5),
+                            resultSet.getString(6));
+                }
             }
             if (singlePackageCache != null) {
                 return true;
@@ -104,24 +107,26 @@ public class PackageDAO  {
 
 
             // get one package from package table
-            String selectStmt = "SELECT cardID,card1,card2,card3,card4,card5 FROM packages LIMIT ?";
+            String selectStmt = "SELECT packageID,card1,card2,card3,card4,card5 FROM packages LIMIT ?";
 
             preparedStatement = getConnection().prepareStatement(selectStmt);
             preparedStatement.setInt(1, 1);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                singlePackageCache = new Package(resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getString(6));
+                if (resultSet.next()) {
+                    singlePackageCache = new Package(resultSet.getInt(1),
+                            resultSet.getString(2),
+                            resultSet.getString(3),
+                            resultSet.getString(4),
+                            resultSet.getString(5),
+                            resultSet.getString(6));
+                }
             }
 
             // delete the package from package table
             String deleteStmt = "DELETE FROM packages WHERE packageID = ?";
 
             preparedStatement = getConnection().prepareStatement(deleteStmt);
-            preparedStatement.setString(1, singlePackageCache.getCardID());
+            preparedStatement.setInt(1, singlePackageCache.getPackageID());
             preparedStatement.executeUpdate();
 
 
@@ -142,7 +147,7 @@ public class PackageDAO  {
 
             //commit transaction
             getConnection().commit();
-            getConnection().close();
+            //getConnection().close();
 
             //return array of cardIDs
             return cardsTmp;

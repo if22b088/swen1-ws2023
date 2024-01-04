@@ -17,7 +17,7 @@ public class Card {
     private Boolean traded;
     public Card() {}
 
-    public Card (String cardID, String cardName, String cardType, int damage) {
+    public Card (String cardID, String cardName, int damage) {
         this.cardID = cardID;
         this.cardName = cardName;
         //this.cardType = cardType;

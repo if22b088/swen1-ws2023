@@ -18,7 +18,10 @@ public class UserRepository {
 
     public boolean addUser(User user) { return getUserDAO().create(user); }
 
-    public User getUser(String username, String token) { return getUserDAO().read(username, token); }
+    //used for get /users{username}
+    public User getUser(String username, String token) { return getUserDAO().getUser(username, token); }
+
+    public User getUserByToken(String token) {return getUserDAO().getUserByToken(token); }
 
     public void updateUser(User user, String token) { getUserDAO().updateUser(user); }
 

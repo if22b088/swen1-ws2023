@@ -91,7 +91,6 @@ public class UserController extends Controller{
         }
     }
 
-
     //updates name, bio, image for specific user
     public Response updateUser(String username, String body, String token) {
         try {
