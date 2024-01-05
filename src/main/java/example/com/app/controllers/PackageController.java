@@ -69,11 +69,6 @@ public class PackageController extends Controller {
 
             //fills the cardlist pack with cards from the body and checks if each of the cards already exists in the db
             for (Card card : pack) {
-
-                System.out.println(card.getCardName());
-                System.out.println(card.getDamage());
-
-
                 //checks whether the card exists by trying to retrieve the card from the db
                 Card cardTemp = getCardRepository().getSingleCard(card.getCardID());
                 //if the card does not yet exist add it to the pack
@@ -129,6 +124,15 @@ public class PackageController extends Controller {
                 //user has more than 5 coins -> buy package
                 if (user.getCoins() >= 5) {
                     String[] cardIDs = getPackageRepository().buyPackage(user);
+
+                    if (cardIDs == null) {
+                        return new Response(
+                                HttpStatus.NOT_FOUND,
+                                ContentType.JSON,
+                                "{ \"error\": \"No card package available for buying\", \"data\": null }"
+                        );
+
+                    }
                     ArrayList<Card> cardsList = new ArrayList<>();
                     for (String cardID : cardIDs) {
                         Card card = getCardRepository().getSingleCard(cardID);

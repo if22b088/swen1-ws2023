@@ -92,7 +92,6 @@ public class Request {
         if (hasParams) {
             return splittedFirstLine[1].split("\\?")[1];
         }
-
         return "";
     }
 

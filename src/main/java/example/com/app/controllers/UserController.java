@@ -65,7 +65,6 @@ public class UserController extends Controller{
     //creates user if does not exist
     public Response createUser(String body) {
         try {
-            System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
             boolean created = getUserRepository().addUser(newUser);
             if (created) {
@@ -95,7 +94,6 @@ public class UserController extends Controller{
     public Response updateUser(String username, String body, String token) {
         try {
             if (token != null) {
-                System.out.println(body);
                 User newUser = getObjectMapper().readValue(body, User.class);
                 newUser.setUsername(username);
 
@@ -127,7 +125,6 @@ public class UserController extends Controller{
     //logs in with specific user
     public Response loginUser(String body){
         try {
-            System.out.println(body);
             User newUser = getObjectMapper().readValue(body, User.class);
             String token = getUserRepository().loginUser(newUser);
             if (token != null) {

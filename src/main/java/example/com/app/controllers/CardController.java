@@ -78,18 +78,33 @@ public class CardController extends Controller {
     }
 
     //gets Deck (four cards) from user who is associated with token
-    public Response getDeck(String token) {
+    public Response getDeck(String token, String format) {
         try {
             //if a token is set/exists
             if (token != null) {
                 List<Card> deckData = getCardRepository().getDeck(token);
-                String deckDataJSON = getObjectMapper().writeValueAsString(deckData);
-                if (deckData != null) {
-                    return new Response(
-                            HttpStatus.OK,
-                            ContentType.JSON,
-                            "{ \"data\": " + deckDataJSON + ", \"error\": null }"
-                    );
+                if (deckData.get(0) !=null) {
+                    //check if path is /deck or /deck?format=plain
+                    System.out.println("this is the format: " + format);
+                    if (format == null) {
+                        String deckDataJSON = getObjectMapper().writeValueAsString(deckData);
+                        return new Response(
+                                HttpStatus.OK,
+                                ContentType.JSON,
+                                "{ \"data\": " + deckDataJSON + ", \"error\": null }"
+                        );
+                    } else if (format.equals("plain")){
+                        String plainData = "";
+                        for(Card card : deckData) {
+                            plainData += card.getCardID()+ " " + card.getCardName()+ " " + card.getDamage();
+                        }
+                        return new Response(
+                                HttpStatus.OK,
+                                ContentType.TEXT,
+                                plainData
+                        );
+
+                    }
                 } else {
                     return new Response(
                             HttpStatus.NO_CONTENT,
@@ -113,6 +128,11 @@ public class CardController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"error\": \"Internal Server Error\", \"data\": null }"
+        );
     }
 
     //upates the 4 cards of a users deck
@@ -120,8 +140,6 @@ public class CardController extends Controller {
         //todo: write conditions for different responses (for 403)
         try {
             if (token != null) {
-                System.out.println(body);
-
 
                 String[] cardIDs = getObjectMapper().readValue(body, String[].class);
                 //checks if new deck contains < 4 cards

@@ -217,7 +217,6 @@ public class CardDAO {
             for (String cardID : cardIDs) {
                 boolean found = false;
                 for (String userCardID : userCardIDs) {
-                    System.out.println("deck cards " + cardID);
                     if (userCardID.equals(cardID)) {
                         found = true;
                         break;

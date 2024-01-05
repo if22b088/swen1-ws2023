@@ -76,8 +76,16 @@ public class App implements ServerApp {
                     return this.userController.getUserByUsername(username,request.getToken());
                 } else if (request.getPathname().equals("/cards")) {
                     return this.cardController.getCards(request.getToken());
-                } else if (request.getPathname().equals("/deck")) {
-                    return this.cardController.getDeck(request.getToken());
+                } else if (request.getPathname().equals("/deck") || request.getPathname().equals("/deck?format=plain")) {
+
+
+                    //get the format from request parameters
+                    String source = request.getParams();
+                    String target = "format=";
+                    String replacement = "";
+                    String format= source.replace(target, replacement);
+                    System.out.println("this is the format: "+ format);
+                    return this.cardController.getDeck(request.getToken(),format);
                 }/* else if (request.getPathname().equals("/stats")) {
                     return this.statController.getUsers();
                 } else if (request.getPathname().equals("/scoreboard")) {
@@ -103,13 +111,6 @@ public class App implements ServerApp {
                     return this.packageController.createPackage(body, request.getToken());
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
-/*not in use because token is used
-                    //get the username from the path
-                    String source = request.getPathname();
-                    String target = "/users/";
-                    String replacement = "";
-                    String username= source.replace(target, replacement);
-*/
                     return this.packageController.buyPackage(body, request.getToken());
                 } /*else if (request.getPathname().equals("/battles")) {
                     String body = request.getBody();

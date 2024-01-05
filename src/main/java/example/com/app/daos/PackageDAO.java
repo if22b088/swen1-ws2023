@@ -121,6 +121,9 @@ public class PackageDAO  {
                             resultSet.getString(6));
                 }
             }
+            if (singlePackageCache.getPackageID() == 0) {
+                return null;
+            }
 
             // delete the package from package table
             String deleteStmt = "DELETE FROM packages WHERE packageID = ?";
@@ -149,6 +152,7 @@ public class PackageDAO  {
             getConnection().commit();
             //getConnection().close();
 
+            singlePackageCache = null;
             //return array of cardIDs
             return cardsTmp;
 
