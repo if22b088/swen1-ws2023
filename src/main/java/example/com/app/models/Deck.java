@@ -13,6 +13,8 @@ public class Deck {
     private String card3;
     private String card4;
 
+
+    public Deck(){}
     public Deck(String card1, String card2, String card3, String card4){
         this.card1 = card1;
         this.card2 = card2;

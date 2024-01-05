@@ -1,5 +1,6 @@
 package example.com.app.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import example.com.app.daos.UserDAO;
 import example.com.app.models.Card;
 import example.com.app.models.Deck;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import example.com.server.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardController extends Controller {
@@ -119,21 +121,37 @@ public class CardController extends Controller {
         try {
             if (token != null) {
                 System.out.println(body);
-                Deck newDeck = getObjectMapper().readValue(body, Deck.class);
 
+
+                String[] cardIDs = getObjectMapper().readValue(body, String[].class);
                 //checks if new deck contains < 4 cards
-                if (newDeck.cardMissing()) {
+                if (cardIDs.length < 4) {
                     return new Response(
                             HttpStatus.BAD_REQUEST,
                             ContentType.JSON,
                             "{ \"error\": \"The provided deck did not include the required amount of cards\", \"data\": null }"
                     );
-                } else {
+                }
+
+                //check
+                //TODO check if any of the cards does not exist or is not owned by the user
+                boolean exists = getCardRepository().checkIfCardsExist(cardIDs, token);
+
+                if (exists) {
+                    Deck newDeck = new Deck(cardIDs[0], cardIDs[1], cardIDs[2], cardIDs[3]);
+
+                    //call updateDeck repository method to update the deck
                     getCardRepository().updateDeck(newDeck, token);
                     return new Response(
                             HttpStatus.OK,
                             ContentType.JSON,
                             "{ \"data\": " + body + "The deck has been successfully configured" + ", \"error\": null }"
+                    );
+                } else {
+                    return new Response(
+                            HttpStatus.FORBIDDEN,
+                            ContentType.JSON,
+                            "{ \"error\": \"At least one of the provided cards does not belong to the user or is not available.\", \"data\": null }"
                     );
                 }
             //if no token was sent
@@ -141,7 +159,7 @@ public class CardController extends Controller {
                 return new Response(
                         HttpStatus.UNAUTHORIZED,
                         ContentType.JSON,
-                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                    "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
                 );
             }
         } catch (JsonProcessingException e) {
@@ -153,9 +171,4 @@ public class CardController extends Controller {
             );
         }
     }
-
-
-
-
-
 }

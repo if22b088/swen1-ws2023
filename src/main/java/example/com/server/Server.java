@@ -50,7 +50,7 @@ public class Server {
                 } else {
                     setResponse(getApp().handleRequest(request));
                 }
-
+                System.out.println(getResponse().getContent());
                 getOutputStream().write(getResponse().build());
             } catch (IOException e) {
                 e.printStackTrace();

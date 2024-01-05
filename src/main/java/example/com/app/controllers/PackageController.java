@@ -1,10 +1,7 @@
 package example.com.app.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import example.com.app.daos.UserDAO;
 import example.com.app.models.Card;
-import example.com.app.models.Deck;
 import example.com.app.models.User;
 import example.com.app.repositories.CardRepository;
 import example.com.app.repositories.UserRepository;
@@ -18,7 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import example.com.server.Response;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.List;
 

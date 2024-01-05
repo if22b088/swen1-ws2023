@@ -31,8 +31,8 @@ public class CardRepository {
 
         //creates and fills the deck by getting the card information for each individual card from the db
         ArrayList<Card> deck = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            deck.add(getCardDAO().getSingleCard(cards.get(i)));
+        for (String cardID : cards) {
+            deck.add(getCardDAO().getSingleCard(cardID));
         }
         return deck;
     }
@@ -41,19 +41,9 @@ public class CardRepository {
     }
 
     //updates the deck of the user with a specific token
-    public void updateDeck(Deck deck, String token) {
+    public void updateDeck(Deck deck, String token) { getCardDAO().updateDeck(deck,token); }
 
-        /*
-        //first gets the card information of each card in the deck)
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(getCardDAO().getSingleCard(deck.getCard1()));
-        cards.add(getCardDAO().getSingleCard(deck.getCard2()));
-        cards.add(getCardDAO().getSingleCard(deck.getCard3()));
-        cards.add(getCardDAO().getSingleCard(deck.getCard4()));
-*/
-        getCardDAO().updateDeck(deck,token);
-
-    }
+    public boolean checkIfCardsExist(String[] cardIDs, String token){ return getCardDAO().checkIfCardsExist(cardIDs, token); }
 
     //public void update(User user) { getUserDAO().update(user); }
 

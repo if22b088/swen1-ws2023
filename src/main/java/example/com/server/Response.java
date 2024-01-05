@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-@Getter(AccessLevel.PRIVATE)
+//@Getter(AccessLevel.PRIVATE)
+@Getter
 @Setter(AccessLevel.PRIVATE)
 public class Response {
     private int statusCode;
