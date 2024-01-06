@@ -1,6 +1,7 @@
 package example.com.app.controllers;
 
 import example.com.app.daos.UserDAO;
+import example.com.app.models.Card;
 import example.com.app.models.User;
 import example.com.app.repositories.UserRepository;
 
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import example.com.server.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -97,16 +99,36 @@ public class UserController extends Controller{
                 User newUser = getObjectMapper().readValue(body, User.class);
                 newUser.setUsername(username);
 
-                getUserRepository().updateUser(newUser, token);
+                int statusCode = getUserRepository().updateUser(newUser, token);
 
+                if (statusCode == 200) {
+                    return new Response(
+                            HttpStatus.OK,
+                            ContentType.JSON,
+                            "{ \"data\": \"User successfully updated\", \"error\": null }"
+                    );
+                } else if (statusCode == 401) {
+                    return new Response(
+                            HttpStatus.UNAUTHORIZED,
+                            ContentType.JSON,
+                            "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                    );
+                } else if (statusCode == 404) {
+                    return new Response(
+                            HttpStatus.NOT_FOUND,
+                            ContentType.JSON,
+                            "{ \"error\": \"User not found\", \"data\": null }"
+                    );
+                } else {
+                    return new Response(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ContentType.JSON,
+                            "{ \"error\": \"Internal Server Error\", \"data\": null }"
+                    );
+                }
+            } else {
                 return new Response(
-                        HttpStatus.CREATED,
-                        ContentType.JSON,
-                        "{ \"data\": \"User successfully updated\", \"error\": null }"
-                );
-            }else {
-                return new Response(
-                        HttpStatus.NOT_FOUND,
+                        HttpStatus.UNAUTHORIZED,
                         ContentType.JSON,
                         "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
                 );
@@ -149,4 +171,80 @@ public class UserController extends Controller{
             );
         }
     }
+
+    public Response getStats(String token) {
+        try {
+            if (token != null) {
+                User user = getUserRepository().getUserByToken(token);
+                User tmpUser = new User (user.getName(),user.getElo(),user.getWins(), user.getLosses());
+                String userDataJSON = getObjectMapper().writeValueAsString(tmpUser);
+                if (!tmpUser.getName().isEmpty()) {
+                    return new Response(
+                            HttpStatus.OK,
+                            ContentType.JSON,
+                            "{ \"data\": " + userDataJSON + ", \"error\": null }"
+                    );
+                } else {
+                    return new Response(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ContentType.JSON,
+                            "{ \"error\": \"Internal Server Error\", \"data\": null }"
+                    );
+                }
+            } else {
+                return new Response(
+                        HttpStatus.UNAUTHORIZED,
+                        ContentType.JSON,
+                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                );
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "{ \"error\": \"Internal Server Error\", \"data\": null }"
+            );
+        }
+    }
+
+
+    public Response getScoreboard(String token) {
+
+        try {
+            if (token != null) {
+                ArrayList<User> users = getUserRepository().getAllUsers();
+
+                String userDataJSON = getObjectMapper().writeValueAsString(users);
+                if (!users.isEmpty()) {
+                    return new Response(
+                            HttpStatus.OK,
+                            ContentType.JSON,
+                            "{ \"data\": " + userDataJSON + ", \"error\": null }"
+                    );
+                } else {
+                    return new Response(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ContentType.JSON,
+                            "{ \"error\": \"Internal Server Error\", \"data\": null }"
+                    );
+                }
+            } else {
+                return new Response(
+                        HttpStatus.UNAUTHORIZED,
+                        ContentType.JSON,
+                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                );
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "{ \"error\": \"Internal Server Error\", \"data\": null }"
+            );
+        }
+    }
+
+
 }

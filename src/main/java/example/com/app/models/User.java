@@ -40,6 +40,8 @@ public class User {
         this.bio = bio;
         this.image = image;
     }
+
+    //full user
     public User (int userID, String username, String name, String token, String bio, String image, int coins, int elo, int wins, int losses) {
         this.userID = userID;
         this.username = username;
@@ -48,6 +50,14 @@ public class User {
         this.bio = bio;
         this.image = image;
         this.coins = coins;
+        this.elo = elo;
+        this.wins = wins;
+        this.losses = losses;
+    }
+
+    //constructor for /stats
+    public User (String name, int elo, int wins, int losses) {
+        this.name = name;
         this.elo = elo;
         this.wins = wins;
         this.losses = losses;

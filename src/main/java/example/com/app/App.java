@@ -72,28 +72,25 @@ public class App implements ServerApp {
                     String target = "/users/";
                     String replacement = "";
                     String username= source.replace(target, replacement);
-
                     return this.userController.getUserByUsername(username,request.getToken());
                 } else if (request.getPathname().equals("/cards")) {
                     return this.cardController.getCards(request.getToken());
                 } else if (request.getPathname().equals("/deck") || request.getPathname().equals("/deck?format=plain")) {
-
-
                     //get the format from request parameters
                     String source = request.getParams();
                     String target = "format=";
                     String replacement = "";
                     String format= source.replace(target, replacement);
-                    System.out.println("this is the format: "+ format);
+                    System.out.println("this is the format: " + format);
                     return this.cardController.getDeck(request.getToken(),format);
-                }/* else if (request.getPathname().equals("/stats")) {
-                    return this.statController.getUsers();
+                } else if (request.getPathname().equals("/stats")) {
+                    return this.userController.getStats(request.getToken());
                 } else if (request.getPathname().equals("/scoreboard")) {
-                    return this.scoreboardController.getUsers();
-                } else if (request.getPathname().equals("/tradings")) {
+                    return this.userController.getScoreboard(request.getToken());
+                }/* else if (request.getPathname().equals("/tradings")) {
                     return this.tradingController.getUsers();
                 }
-*/
+                */
 
             }
             case POST: {
@@ -105,10 +102,11 @@ public class App implements ServerApp {
                 } else if (request.getPathname().equals("/sessions")) {
                     String body = request.getBody();
                     return this.userController.loginUser(body);
+                //create package
                 } else if (request.getPathname().equals("/packages")) {
                     String body = request.getBody();
-
                     return this.packageController.createPackage(body, request.getToken());
+                //buy package
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
                     return this.packageController.buyPackage(body, request.getToken());
