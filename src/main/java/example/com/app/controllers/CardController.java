@@ -137,12 +137,11 @@ public class CardController extends Controller {
 
     //upates the 4 cards of a users deck
     public Response updateDeck(String body, String token) {
-        //todo: write conditions for different responses (for 403)
         try {
+            //check if token was sent
             if (token != null) {
-
                 String[] cardIDs = getObjectMapper().readValue(body, String[].class);
-                //checks if new deck contains < 4 cards
+                //checks if new deck (cards sent) contains < 4 cards
                 if (cardIDs.length < 4) {
                     return new Response(
                             HttpStatus.BAD_REQUEST,

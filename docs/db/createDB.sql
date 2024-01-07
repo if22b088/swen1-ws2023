@@ -45,3 +45,11 @@ CREATE TABLE Packages (
     Card5 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE
 );
 
+
+CREATE TABLE Tradings (
+    UsernameOfferer VARCHAR(255),
+    TradingID VARCHAR(255) PRIMARY KEY,
+    CardToTrade VARCHAR(255) ,
+    CardType VARCHAR(255),
+    MinimumDamage INT
+);

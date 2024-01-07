@@ -14,6 +14,10 @@ import example.com.app.controllers.PackageController;
 import example.com.app.daos.PackageDAO;
 import example.com.app.repositories.PackageRepository;
 
+import example.com.app.controllers.TradingController;
+import example.com.app.daos.TradingDAO;
+import example.com.app.repositories.TradingRepository;
+
 
 import example.com.app.services.DatabaseService;
 import example.com.http.ContentType;
@@ -37,6 +41,8 @@ public class App implements ServerApp {
     private CardController cardController;
     @Setter(AccessLevel.PRIVATE)
     private PackageController packageController;
+    @Setter(AccessLevel.PRIVATE)
+    private TradingController tradingController;
 
 
     public App() {
@@ -87,10 +93,10 @@ public class App implements ServerApp {
                     return this.userController.getStats(request.getToken());
                 } else if (request.getPathname().equals("/scoreboard")) {
                     return this.userController.getScoreboard(request.getToken());
-                }/* else if (request.getPathname().equals("/tradings")) {
-                    return this.tradingController.getUsers();
+                } else if (request.getPathname().equals("/tradings")) {
+                    return this.tradingController.getTradings(request.getToken());
                 }
-                */
+
 
             }
             case POST: {
@@ -110,13 +116,26 @@ public class App implements ServerApp {
                 } else if (request.getPathname().equals("/transactions/packages")) {
                     String body = request.getBody();
                     return this.packageController.buyPackage(body, request.getToken());
-                } /*else if (request.getPathname().equals("/battles")) {
-                    String body = request.getBody();
-                    return this.cityController.createCity(body);
                 } else if (request.getPathname().equals("/tradings")) {
+                    String body = request.getBody();
+                    return this.tradingController.createTrading(body,request.getToken());
+                } else if (request.getPathname().startsWith("/tradings/")) {
+                    String body = request.getBody();
+                    //get the username from the path
+                    String master = request.getPathname();
+                    String target = "/tradings/";
+                    String replacement = "";
+                    String tradingDealID= master.replace(target, replacement);
+
+                    return this.tradingController.carryOutTrading(body, tradingDealID,request.getToken());
+                }
+
+
+                /*else if (request.getPathname().equals("/battles")) {
                     String body = request.getBody();
                     return this.cityController.createCity(body);
                 }
+                break;
                 */
                 //TODO: add GET for /tradings/{tradingdealid}
 
@@ -141,7 +160,19 @@ public class App implements ServerApp {
                 }
                 break;
             case DELETE:
-                //TODO: add PUT for /tradings/{tradingdealid}
+                if (request.getPathname().startsWith("/tradings/")) {
+                    //get the username from the path
+                    String master = request.getPathname();
+                    String target = "/tradings/";
+                    String replacement = "";
+                    String tradingDealID= master.replace(target, replacement);
+
+                    return this.tradingController.deleteTrading(tradingDealID,request.getToken());
+                    /*
+                    String body = request.getBody();
+                    return this.userController.updateUser(body);
+                    */
+                }
                 break;
         }
         return new Response(HttpStatus.NOT_FOUND, ContentType.JSON, "{ \"error\": \"Not Found\", \"data\": null }");

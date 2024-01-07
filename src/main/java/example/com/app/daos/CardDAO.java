@@ -188,6 +188,7 @@ public class CardDAO {
         }
     }
 
+    //checks if user owns the card  -> user can only have cards that are exist in the db (card table)
     public Boolean checkIfCardsExist(String[] cardIDs, String token) {
         try {
             getConnection().setAutoCommit(false);
@@ -196,7 +197,6 @@ public class CardDAO {
         }
 
         //check if user owns one of the cards
-        ArrayList <Card> cards = new ArrayList();
         String selectStmt = "SELECT c.CardID FROM Cards c " +
                 "JOIN Stacks s ON c.CardID = s.CardID " +
                 "JOIN Users u ON s.UserID = u.UserID " +

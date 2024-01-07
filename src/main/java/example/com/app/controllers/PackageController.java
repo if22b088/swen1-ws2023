@@ -63,11 +63,8 @@ public class PackageController extends Controller {
                 );
             }
 
-            ArrayList<Card> pack = getObjectMapper().readValue(body, getObjectMapper().getTypeFactory().constructCollectionType(List.class, Card.class));
-
-
-
             //fills the cardlist pack with cards from the body and checks if each of the cards already exists in the db
+            ArrayList<Card> pack = getObjectMapper().readValue(body, getObjectMapper().getTypeFactory().constructCollectionType(List.class, Card.class));
             for (Card card : pack) {
                 //checks whether the card exists by trying to retrieve the card from the db
                 Card cardTemp = getCardRepository().getSingleCard(card.getCardID());
@@ -173,6 +170,10 @@ public class PackageController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
-        return null;
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"error\": \"Internal Server Error\", \"data\": null }"
+        );
     }
 }

@@ -11,7 +11,8 @@ public class Card {
     private String cardID;
     @JsonAlias({"Name"})
     private String cardName;
-    //private String cardType;
+    //@JsonAlias({"Type"})
+    private String cardType;
     @JsonAlias({"Damage"})
     private int damage;
     private Boolean traded;
@@ -20,7 +21,12 @@ public class Card {
     public Card (String cardID, String cardName, int damage) {
         this.cardID = cardID;
         this.cardName = cardName;
-        //this.cardType = cardType;
+        if (cardName.contains("Spell")) {
+            this.cardType = "spell";
+        } else {
+            this.cardType = "monster";
+        }
+
         this.damage = damage;
     }
     //public abstract void attack();

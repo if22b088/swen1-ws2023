@@ -33,15 +33,15 @@ public class PackageDAO  {
             getConnection().setAutoCommit(false);
 
             //create the cards in cards table
-            String insertStmt = "INSERT INTO cards (cardID, cardName, Damage) VALUES (?, ?, ?)";
+            String insertStmt = "INSERT INTO cards (cardID, cardName, cardType, Damage) VALUES (?, ?, ?, ?)";
             PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
 
             //create a new entry in cards table for each card in the pack
             for (Card card : cards) {
                 preparedStatement.setString(1, card.getCardID());
                 preparedStatement.setString(2, card.getCardName());
-                preparedStatement.setInt(3, card.getDamage());
-
+                preparedStatement.setString(3, card.getCardName());
+                preparedStatement.setInt(4, card.getDamage());
                 preparedStatement.executeUpdate();
             }
 
@@ -54,7 +54,6 @@ public class PackageDAO  {
                 preparedStatement.setString(parameterIndex, card.getCardID());
                 parameterIndex++;
             }
-
             preparedStatement.executeUpdate();
             //commit transaction
             getConnection().commit();

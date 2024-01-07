@@ -42,11 +42,15 @@ public class UserDAO  {
             preparedStatement.setInt(4, 100);
             preparedStatement.setInt(5, 0);
             preparedStatement.setInt(6, 0);
-            preparedStatement.execute();
+            int result = preparedStatement.executeUpdate();
+
+            if (result > 0) {
+                return true;
+            } else {
+                return false;
+            }
             //todo fix connection close
             //getConnection().close();
-            return true;
-
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -238,7 +242,7 @@ public class UserDAO  {
                     PreparedStatement preparedStatement2 = getConnection().prepareStatement(updateStmt);
                     preparedStatement2.setString(1, token);
                     preparedStatement2.setString(2, user.getUsername());
-                    preparedStatement2.execute();
+                    preparedStatement2.executeUpdate();
                     //todo fix connection close
                     //getConnection().close();
 

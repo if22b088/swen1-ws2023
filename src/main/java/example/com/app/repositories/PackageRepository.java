@@ -1,11 +1,8 @@
 package example.com.app.repositories;
 
-import example.com.app.daos.UserDAO;
 import example.com.app.models.Card;
 import example.com.app.models.User;
 
-
-import example.com.app.daos.CardDAO;
 import example.com.app.daos.PackageDAO;
 import java.util.List;
 
@@ -23,7 +20,6 @@ public class PackageRepository {
     PackageDAO packageDAO;
 
     public PackageRepository(PackageDAO packageDAO) { setPackageDAO(packageDAO); }
-
 
     public int createPackage(ArrayList<Card> cards) {
         return getPackageDAO().createPackage(cards);
