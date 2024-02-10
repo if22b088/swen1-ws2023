@@ -101,7 +101,7 @@ public class CardController extends Controller {
                         return new Response(
                                 HttpStatus.OK,
                                 ContentType.TEXT,
-                                plainData
+                                "The Deck has Cards the response contain these: \n"+plainData
                         );
 
                     }

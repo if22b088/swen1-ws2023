@@ -53,3 +53,10 @@ CREATE TABLE Tradings (
     CardType VARCHAR(255),
     MinimumDamage INT
 );
+
+CREATE TABLE Battles (
+    BattleID SERIAL PRIMARY KEY,
+    User1 VARCHAR(255) REFERENCES Users(Username) UNIQUE,
+    User2 VARCHAR(255) REFERENCES Users(Username),
+    BattleLog TEXT 
+);

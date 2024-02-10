@@ -36,10 +36,7 @@ public class TradingDAO  {
             }
             //getConnection().close();
             return tradings;
-        }
-
-
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;

@@ -18,6 +18,10 @@ import example.com.app.controllers.TradingController;
 import example.com.app.daos.TradingDAO;
 import example.com.app.repositories.TradingRepository;
 
+import example.com.app.controllers.BattleController;
+import example.com.app.daos.BattleDAO;
+import example.com.app.repositories.BattleRepository;
+
 
 import example.com.app.services.DatabaseService;
 import example.com.http.ContentType;
@@ -43,6 +47,8 @@ public class App implements ServerApp {
     private PackageController packageController;
     @Setter(AccessLevel.PRIVATE)
     private TradingController tradingController;
+    @Setter(AccessLevel.PRIVATE)
+    private BattleController battleController;
 
 
     public App() {
@@ -65,6 +71,10 @@ public class App implements ServerApp {
         PackageDAO packageDAO = new PackageDAO(databaseService.getConnection());
         PackageRepository packageRepository = new PackageRepository(packageDAO);
         setPackageController(new PackageController(cardRepository,userRepository,packageRepository));
+
+        BattleDAO battleDAO = new BattleDAO(databaseService.getConnection());
+        BattleRepository battleRepository = new BattleRepository(battleDAO);
+        setBattleController(new BattleController(battleRepository,userRepository));
     }
 
     public Response handleRequest(Request request) {
@@ -131,12 +141,11 @@ public class App implements ServerApp {
                 }
 
 
-                /*else if (request.getPathname().equals("/battles")) {
-                    String body = request.getBody();
-                    return this.cityController.createCity(body);
+                else if (request.getPathname().equals("/battles")) {
+                    return this.battleController.carryOutBattle(request.getToken());
                 }
                 break;
-                */
+
                 //TODO: add GET for /tradings/{tradingdealid}
 
             }
