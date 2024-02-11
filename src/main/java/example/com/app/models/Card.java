@@ -29,5 +29,4 @@ public class Card {
 
         this.damage = damage;
     }
-    //public abstract void attack();
 }

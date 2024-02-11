@@ -1,7 +1,8 @@
 package example.com.app.daos;
 
-import example.com.app.models.Card;
+
 import example.com.app.models.User;
+import example.com.app.models.Battle;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +19,17 @@ public class BattleDAO {
     @Getter(AccessLevel.PRIVATE)
     Connection connection;
 
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    Battle battleCache;
+
 
     public BattleDAO(Connection connection) { setConnection(connection); }
 
-    public int getPendingBattles(User user) {
-        int battleID = -1;
+
+    //checks if battles exist that don't have a second user and where user1 != user parameter
+    public Battle getPendingBattles(User user) {
+
         String selectStmt = "SELECT BattleID FROM Battles WHERE User2 IS NULL AND User1 != ?";
 
         try {
@@ -32,18 +39,20 @@ public class BattleDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()) {
-                battleID = resultSet.getInt("BattleID");
+                battleCache = new Battle(resultSet.getInt(1),resultSet.getString(2),
+                        resultSet.getString(3), resultSet.getString(4));
             }
             //getConnection().close();
-            return battleID;
+            return battleCache;
         }
-
 
         catch (SQLException e) {
             e.printStackTrace();
+            battleCache.setBattleID(-1);
+            return battleCache;
         }
-        return battleID;
     }
+
     public int createBattle(User user) {
         try {
             String insertStmt = "INSERT INTO Battles (User1) VALUES (?)";
@@ -68,10 +77,10 @@ public class BattleDAO {
         }
     }
 
-    //checks if battle with battleID exists and if user2 is not null
+    //checks if battle with battleID exists and if user2 and the log are not null
     public Boolean checkIfBattleComplete(int battleID) {
 
-        String selectStmt = "SELECT BattleID FROM Battles WHERE BattleID = ? AND User2 IS NOT NULL;";
+        String selectStmt = "SELECT BattleID FROM Battles WHERE BattleID = ? AND User2 IS NOT NULL AND battleLog IS NOT NULL;";
 
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
@@ -113,6 +122,24 @@ public class BattleDAO {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void updateBattleLog(int battleID, String battleLog) {
+
+        String updateStmt = "UPDATE battles SET battleLog = ? WHERE battleID = ?;";
+
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement(updateStmt);
+            preparedStatement.setString(1, battleLog);
+            preparedStatement.setInt(2, battleID);
+
+            preparedStatement.executeUpdate();
+            //getConnection().close();
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

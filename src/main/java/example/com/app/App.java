@@ -1,7 +1,5 @@
 package example.com.app;
 
-import example.com.app.controllers.CityController;
-
 import example.com.app.controllers.UserController;
 import example.com.app.daos.UserDAO;
 import example.com.app.repositories.UserRepository;
@@ -15,8 +13,6 @@ import example.com.app.daos.PackageDAO;
 import example.com.app.repositories.PackageRepository;
 
 import example.com.app.controllers.TradingController;
-import example.com.app.daos.TradingDAO;
-import example.com.app.repositories.TradingRepository;
 
 import example.com.app.controllers.BattleController;
 import example.com.app.daos.BattleDAO;
@@ -31,7 +27,6 @@ import lombok.Setter;
 import example.com.server.Request;
 import example.com.server.Response;
 import example.com.server.ServerApp;
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Pack;
 
 
 public class App implements ServerApp {
@@ -88,7 +83,7 @@ public class App implements ServerApp {
                     String target = "/users/";
                     String replacement = "";
                     String username= source.replace(target, replacement);
-                    return this.userController.getUserByUsername(username,request.getToken());
+                    return this.userController.getUserByUsernameToken(username,request.getToken());
                 } else if (request.getPathname().equals("/cards")) {
                     return this.cardController.getCards(request.getToken());
                 } else if (request.getPathname().equals("/deck") || request.getPathname().equals("/deck?format=plain")) {
@@ -106,8 +101,6 @@ public class App implements ServerApp {
                 } else if (request.getPathname().equals("/tradings")) {
                     return this.tradingController.getTradings(request.getToken());
                 }
-
-
             }
             case POST: {
                 //create User

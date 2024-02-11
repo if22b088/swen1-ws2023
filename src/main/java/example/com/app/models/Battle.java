@@ -7,9 +7,11 @@ import lombok.Setter;
 @Setter
 public class Battle {
 
-    private int round;
+    private int battleID;
+    private String User1;
+    private String User2;
+    private String[] battleLog;
 
-    public void fight(Deck deck1, Deck deck2) {
+    public Battle(int battleID, String User1, String User2, String battleLog) {
     }
-
 }

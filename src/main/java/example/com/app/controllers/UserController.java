@@ -29,7 +29,7 @@ public class UserController extends Controller{
         setUserRepository(userRepository);
     }
 
-    public Response getUserByUsername(String username,String token) {
+    public Response getUserByUsernameToken(String username,String token) {
         try {
             if (token != null) {
                 User user = getUserRepository().getUser(username, token);

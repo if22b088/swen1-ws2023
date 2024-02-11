@@ -81,8 +81,33 @@ public class UserDAO  {
         }
         return null;
     }
+    //used for battlelogic
+    public User getUserByUsername(String userName) {
+        //query requested user
+        String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
+            preparedStatement.setString(1, userName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    singleUserCache = new User(resultSet.getInt(1),resultSet.getString(2),
+                            resultSet.getString(3), resultSet.getString(4),
+                            resultSet.getString(5), resultSet.getString(6),
+                            resultSet.getInt(7), resultSet.getInt(8),
+                            resultSet.getInt(9), resultSet.getInt(10));
+                }
+            }
 
-    public User getUser(String userName, String token) {
+            //todo fix connection close
+            //getConnection().close();
+            return singleUserCache;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User getUserByUsernameToken(String userName, String token) {
         //query requested user
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
         try {

@@ -22,7 +22,9 @@ public class UserRepository {
     public ArrayList<User> getAllUsers() { return getUserDAO().getAllUsers(); }
 
     //used for get /users{username}
-    public User getUser(String username, String token) { return getUserDAO().getUser(username, token); }
+    public User getUser(String username, String token) { return getUserDAO().getUserByUsernameToken(username, token); }
+
+    public User getUserByUsername(String username) {return getUserDAO().getUserByUsername(username); }
 
     public User getUserByToken(String token) {return getUserDAO().getUserByToken(token); }
 

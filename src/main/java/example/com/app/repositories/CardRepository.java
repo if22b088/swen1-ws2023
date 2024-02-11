@@ -6,8 +6,6 @@ import example.com.app.daos.CardDAO;
 import example.com.app.models.Card;
 import example.com.app.models.Deck;
 
-import example.com.app.models.City;
-import example.com.app.models.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
