@@ -19,6 +19,12 @@ public class Trading {
     private int minDamage;
 
 
+    //jackson requires default constructor
+    public Trading() {
+
+    }
+
+
     public Trading(String usernameOfferer, String id, String cardToTrade, String cardType, int minDamage ){
         this.usernameOfferer = usernameOfferer;
         this.id = id;

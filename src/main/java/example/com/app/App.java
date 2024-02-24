@@ -1,22 +1,16 @@
 package example.com.app;
 
 import example.com.app.controllers.UserController;
-import example.com.app.daos.UserDAO;
-import example.com.app.repositories.UserRepository;
+import example.com.app.daos.*;
+import example.com.app.repositories.*;
 
 import example.com.app.controllers.CardController;
-import example.com.app.daos.CardDAO;
-import example.com.app.repositories.CardRepository;
 
 import example.com.app.controllers.PackageController;
-import example.com.app.daos.PackageDAO;
-import example.com.app.repositories.PackageRepository;
 
 import example.com.app.controllers.TradingController;
 
 import example.com.app.controllers.BattleController;
-import example.com.app.daos.BattleDAO;
-import example.com.app.repositories.BattleRepository;
 
 
 import example.com.app.services.DatabaseService;
@@ -30,10 +24,7 @@ import example.com.server.ServerApp;
 
 
 public class App implements ServerApp {
-    /*
-    @Setter(AccessLevel.PRIVATE)
-    private CityController cityController;
-     */
+
     @Setter(AccessLevel.PRIVATE)
     private UserController userController;
     @Setter(AccessLevel.PRIVATE)
@@ -45,16 +36,9 @@ public class App implements ServerApp {
     @Setter(AccessLevel.PRIVATE)
     private BattleController battleController;
 
-
     public App() {
 
         DatabaseService databaseService = new DatabaseService();
-
-        /*
-        CityDAO cityDAO = new CityDAO(databaseService.getConnection());
-        CityRepository cityRepository = new CityRepository(cityDAO);
-        setCityController(new CityController(cityRepository));
-        */
         UserDAO userDAO = new UserDAO(databaseService.getConnection());
         UserRepository userRepository = new UserRepository(userDAO);
         setUserController(new UserController(userRepository));
@@ -67,9 +51,13 @@ public class App implements ServerApp {
         PackageRepository packageRepository = new PackageRepository(packageDAO);
         setPackageController(new PackageController(cardRepository,userRepository,packageRepository));
 
+        TradingDAO tradingDAO = new TradingDAO(databaseService.getConnection());
+        TradingRepository tradingRepository = new TradingRepository(tradingDAO);
+        setTradingController(new TradingController(tradingRepository,userRepository,cardRepository));
+
         BattleDAO battleDAO = new BattleDAO(databaseService.getConnection());
         BattleRepository battleRepository = new BattleRepository(battleDAO);
-        setBattleController(new BattleController(battleRepository,userRepository));
+        setBattleController(new BattleController(battleRepository,userRepository,cardRepository));
     }
 
     public Response handleRequest(Request request) {
@@ -132,7 +120,6 @@ public class App implements ServerApp {
 
                     return this.tradingController.carryOutTrading(body, tradingDealID,request.getToken());
                 }
-
 
                 else if (request.getPathname().equals("/battles")) {
                     return this.battleController.carryOutBattle(request.getToken());

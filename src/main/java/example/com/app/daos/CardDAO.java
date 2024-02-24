@@ -78,8 +78,9 @@ public class CardDAO {
 
             //for(int i = 0; i < 4; i++ ) {
             while(resultSet.next()) {
-                for(int i = 1; i < 5; i++) {
+                for(int i = 2; i < 6; i++) {
                     deck.add(resultSet.getString(i));
+                    System.out.println("this is the card: "+ resultSet.getString(i));
                 }
             }
             //getConnection().close();

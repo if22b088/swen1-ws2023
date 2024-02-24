@@ -32,5 +32,8 @@ public class UserRepository {
 
     public String loginUser(User user) { return getUserDAO().login(user); }
 
+    public void updateUserStats(User user) { getUserDAO().updateUserStats(user);
+    }
+
     // public void remove(User type) {}
 }

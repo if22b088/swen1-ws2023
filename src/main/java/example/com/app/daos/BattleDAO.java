@@ -30,7 +30,7 @@ public class BattleDAO {
     //checks if battles exist that don't have a second user and where user1 != user parameter
     public Battle getPendingBattles(User user) {
 
-        String selectStmt = "SELECT BattleID FROM Battles WHERE User2 IS NULL AND User1 != ?";
+        String selectStmt = "SELECT * FROM Battles WHERE User2 IS NULL AND User1 != NULL AND User1 != ?";
 
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
@@ -54,6 +54,7 @@ public class BattleDAO {
     }
 
     public int createBattle(User user) {
+        int newBattleID = 0;
         try {
             String insertStmt = "INSERT INTO Battles (User1) VALUES (?)";
             PreparedStatement preparedStatement = getConnection().prepareStatement(insertStmt);
@@ -61,9 +62,9 @@ public class BattleDAO {
             preparedStatement.setString(1, user.getUsername());
 
             int result = preparedStatement.executeUpdate();
-            int newBattleID = -1;
+            newBattleID = -1;
 
-            if (result >0) {
+            if (result > 0) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
                 if (resultSet.next()) {
                     newBattleID = resultSet.getInt("battleID");
@@ -72,8 +73,8 @@ public class BattleDAO {
 
             //getConnection().close();
             return newBattleID;
-        }  catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            return newBattleID;
         }
     }
 
@@ -95,7 +96,7 @@ public class BattleDAO {
         }
 
         catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
         return false;
     }

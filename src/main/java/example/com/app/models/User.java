@@ -24,7 +24,7 @@ public class User {
     //private Stack userStack;
     private Deck userDeck;
     private String token;
-    private int stats;
+    //private int stats;
     @JsonAlias({"Bio"})
     private String bio;
     @JsonAlias({"Image"})
@@ -69,7 +69,11 @@ public class User {
         this.coins = 20;
        // this.userStack = new Stack();
         //this.userDeck = new Deck();
-        this.stats = 100;
+        this.elo = 100;
+    }
+
+    public User(String token) {
+        this.token = token;
     }
 
     public void manageCards() {

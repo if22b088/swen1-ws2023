@@ -1,5 +1,5 @@
 package example.com.app.controllers;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import example.com.app.daos.UserDAO;
 import example.com.app.models.Card;
 import example.com.app.models.User;
@@ -97,6 +97,7 @@ public class UserController extends Controller{
         try {
             if (token != null) {
                 User newUser = getObjectMapper().readValue(body, User.class);
+                System.out.println("NEW USER: username: "+newUser.getUsername()+ "token:"+ newUser.getToken());
                 newUser.setUsername(username);
 
                 int statusCode = getUserRepository().updateUser(newUser, token);
@@ -176,7 +177,11 @@ public class UserController extends Controller{
         try {
             if (token != null) {
                 User user = getUserRepository().getUserByToken(token);
-                User tmpUser = new User (user.getName(),user.getElo(),user.getWins(), user.getLosses());
+                User tmpUser = new User(user.getName(),user.getElo(),user.getWins(),user.getLosses());
+
+                // Configure ObjectMapper to exclude null values
+                getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
                 String userDataJSON = getObjectMapper().writeValueAsString(tmpUser);
                 if (!tmpUser.getName().isEmpty()) {
                     return new Response(

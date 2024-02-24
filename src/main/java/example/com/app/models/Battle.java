@@ -14,4 +14,8 @@ public class Battle {
 
     public Battle(int battleID, String User1, String User2, String battleLog) {
     }
+
+    public Battle() {
+
+    }
 }

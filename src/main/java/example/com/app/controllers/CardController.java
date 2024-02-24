@@ -83,20 +83,22 @@ public class CardController extends Controller {
             //if a token is set/exists
             if (token != null) {
                 List<Card> deckData = getCardRepository().getDeck(token);
-                if (deckData.get(0) !=null) {
+
+                if (!deckData.isEmpty() && deckData.get(1) != null) {
                     //check if path is /deck or /deck?format=plain
-                    System.out.println("this is the format: " + format);
-                    if (format == null) {
+
+                    if (format.isEmpty()) {
+                        System.out.println("STILL WORKS: format is " + format);
                         String deckDataJSON = getObjectMapper().writeValueAsString(deckData);
                         return new Response(
                                 HttpStatus.OK,
                                 ContentType.JSON,
                                 "{ \"data\": " + deckDataJSON + ", \"error\": null }"
                         );
-                    } else if (format.equals("plain")){
+                    } else {
                         String plainData = "";
                         for(Card card : deckData) {
-                            plainData += card.getCardID()+ " " + card.getCardName()+ " " + card.getDamage();
+                            plainData += card.getCardID()+ " " + card.getCardName()+ " " + card.getDamage()+" ";
                         }
                         return new Response(
                                 HttpStatus.OK,
@@ -128,11 +130,14 @@ public class CardController extends Controller {
                     "{ \"error\": \"Internal Server Error\", \"data\": null }"
             );
         }
+        /*
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,
                 "{ \"error\": \"Internal Server Error\", \"data\": null }"
         );
+        */
+
     }
 
     //upates the 4 cards of a users deck
@@ -150,8 +155,6 @@ public class CardController extends Controller {
                     );
                 }
 
-                //check
-                //TODO check if any of the cards does not exist or is not owned by the user
                 boolean exists = getCardRepository().checkIfCardsExist(cardIDs, token);
 
                 if (exists) {

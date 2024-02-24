@@ -83,6 +83,7 @@ public class UserDAO  {
     }
     //used for battlelogic
     public User getUserByUsername(String userName) {
+        singleUserCache= null;
         //query requested user
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
         try {
@@ -108,6 +109,7 @@ public class UserDAO  {
     }
 
     public User getUserByUsernameToken(String userName, String token) {
+        singleUserCache= null;
         //query requested user
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE username = ?;";
         try {
@@ -138,7 +140,8 @@ public class UserDAO  {
             }
 
             //if token is not equal user- or admin-token return null
-            if (!singleUserCache.getToken().equals(token) || !adminUserCache.getToken().equals(token) ) {
+
+            if (singleUserCache == null || !singleUserCache.getToken().equals(token) || !adminUserCache.getToken().equals(token) ) {
                 return null;
             }
             //todo fix connection close
@@ -152,7 +155,7 @@ public class UserDAO  {
 
 
     public User getUserByToken(String token) {
-
+        singleUserCache= null;
         String selectStmt = "SELECT userID, username, name, token, bio, image, coins, elo, wins, losses FROM users WHERE token = ?;";
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement(selectStmt);
@@ -195,6 +198,17 @@ public class UserDAO  {
                 }
             }
             //if token does not match the user to be updated or the admin token return 401 (forbidden)
+            String selectStmt2 = "SELECT token FROM users WHERE username = ?;";
+            PreparedStatement preparedStatement1 = getConnection().prepareStatement(selectStmt2);
+            preparedStatement1.setString(1, user.getUsername());
+            User userCache = new User();
+            try (ResultSet resultSet = preparedStatement1.executeQuery()) {
+                if (resultSet.next()) {
+                     userCache = new User(resultSet.getString(1));
+                }
+            }
+            user.setToken(userCache.getToken());
+
             if (!user.getToken().equals(token) || !adminUserCache.getToken().equals(token) ) {
                 return 401;
             }
@@ -247,6 +261,7 @@ public class UserDAO  {
     }
 */
     public String login(User user) {
+        singleUserCache= null;
         String selectStmt = "SELECT username, password FROM users WHERE username = ?;";
 
         try {
@@ -291,5 +306,29 @@ public class UserDAO  {
 
     public void delete(int id) {
 
+    }
+
+    public void updateUserStats(User user) {
+
+        //query admin token
+        String updateStmt = "UPDATE users SET elos = ?, wins = ?, losses= ? WHERE username = ?;";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(updateStmt)) {
+
+            //update the user
+            try {
+
+                preparedStatement.setInt(1, user.getElo());
+                preparedStatement.setInt(2, user.getWins());
+                preparedStatement.setInt(3, user.getLosses());
+                preparedStatement.setString(4, user.getUsername());
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

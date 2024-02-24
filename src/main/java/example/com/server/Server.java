@@ -36,25 +36,32 @@ public class Server {
     private void run() {
         while (true) {
             try {
-                setClientSocket(getServerSocket().accept());
-                setInputStream(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
-                setRequest(new Request(getInputStream()));
-                setOutputStream(new PrintWriter(clientSocket.getOutputStream(), true));
 
-                if (request.getPathname() == null) {
-                    setResponse(new Response(
-                        HttpStatus.BAD_REQUEST,
-                        ContentType.TEXT,
-                ""
-                    ));
-                } else {
-                    setResponse(getApp().handleRequest(request));
-                }
-                System.out.println(getResponse().getContent());
+                setClientSocket(getServerSocket().accept());
+                /*
+                //single trhead version
+                setInputStream(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
+                setOutputStream(new PrintWriter(clientSocket.getOutputStream(), true));
+                setRequest(new Request(getInputStream()));
+                setResponse(getApp().handleRequest(request));
+                //System.out.println(getResponse().getContent());
                 getOutputStream().write(getResponse().build());
+                //single trhead ends here
+*/
+                Task task = new Task(getApp(), clientSocket);
+
+                Thread taskThread = new Thread(task);
+                taskThread.start();
+
+
+
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
+            }
+            /*
+            //old single thread version close
+
+            finally {
                 try {
                     if (getOutputStream() != null) {
                         getOutputStream().close();
@@ -67,6 +74,11 @@ public class Server {
                     e.printStackTrace();
                 }
             }
+            */
+
+
+
+
         }
     }
 

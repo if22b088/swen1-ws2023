@@ -24,13 +24,17 @@ public class CardRepository {
 
     //gets all the cards of a users deck
     public ArrayList<Card> getDeck(String token) {
+        System.out.print("JUHUUHUHU");
         //first has to query the db for the deck (gets the cardIDs)
         ArrayList<String> cards = getCardDAO().getDeck(token);
+
 
         //creates and fills the deck by getting the card information for each individual card from the db
         ArrayList<Card> deck = new ArrayList<>();
         for (String cardID : cards) {
+            System.out.print(cardID);
             deck.add(getCardDAO().getSingleCard(cardID));
+
         }
         return deck;
     }
