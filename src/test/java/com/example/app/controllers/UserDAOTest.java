@@ -92,8 +92,8 @@ public class UserDAOTest {
     @Test
     void testUpdateUser() {
         // Update user details
-        //User user = new User("testUser", "newName", "newBio", "newImage", "testUser-mtcgToken", 0, 0, 0);
-        //assertEquals(200, userDAO.updateUser(user, "testUser-mtcgToken"));
+        User user = new User("testUser", "newBio", "newImage");
+        assertEquals(200, userDAO.updateUser(user, "testUser-mtcgToken"));
     }
 
     @Test

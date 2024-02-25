@@ -207,9 +207,13 @@ public class UserDAO  {
                 }
             }
             user.setToken(userCache.getToken());
+            if(user.getToken()!= null) {
 
-            if (!user.getToken().equals(token) || !adminUserCache.getToken().equals(token) ) {
-                return 401;
+                if (!user.getToken().equals(token) || !adminUserCache.getToken().equals(token)) {
+                    return 401;
+                }
+            } else {
+                return 404;
             }
 
             //update the user
