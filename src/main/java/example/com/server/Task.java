@@ -35,14 +35,6 @@ public class Task implements Runnable{
     public void run() {
 
             System.out.println("Current Thread: " + Thread.currentThread().getName());
-        /* try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-         */
-            System.out.println("Current Thread: " + Thread.currentThread().getName());
             response = app.handleRequest(request);
             System.out.println(response.getContent());
             System.out.println(response.build());
