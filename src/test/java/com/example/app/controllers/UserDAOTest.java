@@ -74,6 +74,14 @@ public class UserDAOTest {
     }
 
     @Test
+    void testGetUserByUsername_shouldfail() {
+        // Get user by username
+        User user = userDAO.getUserByUsername("testUser");
+        assertNotNull(user);
+        assertNotEquals("", user.getUsername());
+    }
+
+    @Test
     void testGetUserByUsernameToken() {
         // Get user by username and token
         User user = userDAO.getUserByUsernameToken("testUser", "testUser-mtcgToken");
@@ -108,6 +116,10 @@ public class UserDAOTest {
     //test user logout (unique mandatory feature)
     void testDeleteToken() {
         assertTrue(userDAO.deleteToken("testUser-mtcgToken"));
+    }
+
+    void testDeleteToken_invalidToken() {
+        assertFalse(userDAO.deleteToken("testUser-mtcgToken"));
     }
 
 

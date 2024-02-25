@@ -45,9 +45,6 @@ public class UserControllerTest {
         assertEquals(assertResponse.getStatusCode(),response.getStatusCode());
         assertEquals(assertResponse.getContentType(),response.getContentType());
         assertEquals(assertResponse.getContent(),response.getContent());
-
     }
-
-
 
 }
