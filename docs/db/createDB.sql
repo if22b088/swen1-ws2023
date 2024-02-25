@@ -1,6 +1,6 @@
 CREATE TABLE Cards (
     CardID VARCHAR(255) PRIMARY KEY,
-    CardName VARCHAR(255) UNIQUE,
+    CardName VARCHAR(255),
     CardType VARCHAR(255),
     Damage INT
 );
@@ -24,6 +24,9 @@ CREATE TABLE Users (
     Coins INT,
     DeckID INT REFERENCES Decks(DeckID) UNIQUE,
     Bio TEXT,
+    Elo INT,
+    Wins INT,
+    Losses INT,
     Image VARCHAR(255)
 );
 
@@ -38,11 +41,11 @@ CREATE TABLE Stacks (
 
 CREATE TABLE Packages (
     PackageID SERIAL PRIMARY KEY,
-    Card1 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE,
-    Card2 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE,
-    Card3 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE,
-    Card4 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE,
-    Card5 VARCHAR(255) REFERENCES Cards(CardID) UNIQUE
+    Card1 VARCHAR(255) REFERENCES Cards(CardID),
+    Card2 VARCHAR(255) REFERENCES Cards(CardID),
+    Card3 VARCHAR(255) REFERENCES Cards(CardID),
+    Card4 VARCHAR(255) REFERENCES Cards(CardID),
+    Card5 VARCHAR(255) REFERENCES Cards(CardID)
 );
 
 

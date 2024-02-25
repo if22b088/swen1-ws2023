@@ -63,8 +63,8 @@ public class App implements ServerApp {
     public Response handleRequest(Request request) {
 
         switch (request.getMethod()) {
-            //get user information by username
             case GET: {
+                //get user information by username
                 if (request.getPathname().startsWith("/users/")) {
                     //get the username from the path
                     String source = request.getPathname();
@@ -157,10 +157,10 @@ public class App implements ServerApp {
                     String tradingDealID= master.replace(target, replacement);
 
                     return this.tradingController.deleteTrading(tradingDealID,request.getToken());
-                    /*
-                    String body = request.getBody();
-                    return this.userController.updateUser(body);
-                    */
+               //unique feature logout. logs the user out by deleting the token
+                } else if (request.getPathname().startsWith("/sessions")) {
+
+                   return this.userController.deleteToken(request.getToken());
                 }
                 break;
         }

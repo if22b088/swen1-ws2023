@@ -90,7 +90,6 @@ public class PackageDAO  {
         return false;
     }
 
-    //todo finish buyPackage
     public String[] buyPackage(User user) {
 
         try {

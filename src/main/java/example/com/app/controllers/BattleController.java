@@ -43,7 +43,8 @@ public class BattleController extends Controller {
 
     private static Battle availableBattle = new Battle();
 
-    private static int winner = 0;
+    @Getter
+    private int winner;
 
 
     public BattleController(BattleRepository battleRepository, UserRepository userRepository, CardRepository cardRepository) {
@@ -54,33 +55,25 @@ public class BattleController extends Controller {
 
 
     public Response carryOutBattle(String token) {
-
+        if(token != null) {
             User user = getUserRepository().getUserByToken(token);
             String battleLog = "";
 
             //if user exists
             if (user != null) {
-                //check if there are existing battles that don't have a second user and the first user != this user
-                /*
-                Battle battleAvailable;
-                synchronized (this) {
-                    battleAvailable = getBattleRepository().checkForBattles(user);
-                }
-                */
-
 
                 //if such a battle does not exist then add a battle and wait until a second user has joined the battle
                 // and then return the battlelog
                 synchronized (this) {
                     if (waitingUsers == 0) {
-                      int newBattleID;
-                      newBattleID = getBattleRepository().addBattle(user);
-                      availableBattle.setBattleID(newBattleID);
-                      availableBattle.setUser1(user.getUsername());
-                      waitingUsers++;
+                        int newBattleID;
+                        newBattleID = getBattleRepository().addBattle(user);
+                        availableBattle.setBattleID(newBattleID);
+                        availableBattle.setUser1(user.getUsername());
+                        waitingUsers++;
                     }
                 }
-                if(availableBattle.getUser1().equals(user.getUsername())) {
+                if (availableBattle.getUser1().equals(user.getUsername())) {
                     //wait until user joins battle and battle is finished
                     synchronized (lock) {
                         try {
@@ -90,10 +83,9 @@ public class BattleController extends Controller {
                         }
                     }
 
-
                     //now that the battle has finished get battlelog from the db and return it
                     battleLog = getBattleRepository().getBattleLog(availableBattle.getBattleID());
-                    synchronized(this ) {
+                    synchronized (this) {
                         return new Response(
                                 HttpStatus.OK,
                                 ContentType.TEXT,
@@ -103,9 +95,8 @@ public class BattleController extends Controller {
                     //if a battle is already available and waiting (second user is empty)
 
                 }
-                if (waitingUsers == 1){
-                    synchronized(this) {
-                        int winner = -1;
+                if (waitingUsers == 1) {
+                    synchronized (this) {
                         User user1 = getUserRepository().getUserByUsername(availableBattle.getUser1());
                         System.out.println(availableBattle.getUser1());
                         System.out.println(user1.getToken());
@@ -126,6 +117,8 @@ public class BattleController extends Controller {
                             randomIndex = random.nextInt(deck2.size());
                             // Get the card at the random index
                             Card user2Card = deck2.get(randomIndex);
+
+
                             //let the cards fight
                             battleLog += fight(user1Card, user2Card);
                             if (winner == 1) {
@@ -133,27 +126,27 @@ public class BattleController extends Controller {
                                 deck2.remove(user2Card);
                                 deck1.add(user2Card);
                                 if (deck2.isEmpty()) {
-                                    battleLog += user1.getUsername()+ " defeated " + user2.getUsername() +"!";
+                                    battleLog += user1.getUsername() + " defeated " + user2.getUsername() + "!";
                                     //update userStats (wins, losses, elo)
-                                    user2.setLosses(user2.getLosses()-1);
-                                    user1.setWins(user1.getWins()+1);
-                                    user2.setElo(user2.getElo()-5);
-                                    user1.setElo(user1.getElo()+3);
+                                    user2.setLosses(user2.getLosses() - 1);
+                                    user1.setWins(user1.getWins() + 1);
+                                    user2.setElo(user2.getElo() - 5);
+                                    user1.setElo(user1.getElo() + 3);
                                     getUserRepository().updateUserStats(user1);
                                     getUserRepository().updateUserStats(user2);
                                     break;
                                 }
                             } else if (winner == 2) {
-                               // remove user1Card from deck1 and add it to deck of user2
+                                // remove user1Card from deck1 and add it to deck of user2
                                 deck1.remove(user1Card);
                                 deck2.add(user1Card);
                                 if (deck1.isEmpty()) {
-                                    battleLog += user2.getUsername()+ " defeated " + user1.getUsername() +"!";
+                                    battleLog += user2.getUsername() + " defeated " + user1.getUsername() + "!";
                                     //update userStats (wins, losses, elo)
-                                    user1.setLosses(user1.getLosses()-1);
-                                    user2.setWins(user2.getWins()+1);
-                                    user1.setElo(user1.getElo()-5);
-                                    user2.setElo(user2.getElo()+3);
+                                    user1.setLosses(user1.getLosses() - 1);
+                                    user2.setWins(user2.getWins() + 1);
+                                    user1.setElo(user1.getElo() - 5);
+                                    user2.setElo(user2.getElo() + 3);
                                     getUserRepository().updateUserStats(user1);
                                     getUserRepository().updateUserStats(user2);
                                     break;
@@ -164,14 +157,14 @@ public class BattleController extends Controller {
                         //battleLog = getBattleRepository().getBattleLog(battleAvailable.getBattleID());
                         //write the battleLog in the database
                         getBattleRepository().updateBattleLog(availableBattle.getBattleID(), battleLog);
-                        synchronized(lock) {
+                        synchronized (lock) {
                             lock.notify(); // Notify waiting thread that a battle is ready
                             waitingUsers = 0;
                         }
                     }
                 }
 
-            //if user does not exist
+                //if user does not exist
             } else {
                 synchronized (this) {
                     return new Response(
@@ -181,19 +174,31 @@ public class BattleController extends Controller {
                     );
                 }
             }
-
             return new Response(
                     HttpStatus.OK,
                     ContentType.TEXT,
                     "The battle has been carried out successfully.\n" + battleLog
             );
+        } else {
+            synchronized (this) {
+                return new Response(
+                        HttpStatus.UNAUTHORIZED,
+                        ContentType.JSON,
+                        "{ \"error\": \"Access token is missing or invalid\", \"data\": null }"
+                );
+            }
+
+        }
+
+
     }
 
     //fight
     //decides what kind of card types are battling
-    public static String fight(Card cardA, Card cardB) {
+    public String fight(Card cardA, Card cardB) {
         //used stringbuilder because it is more efficient than normal string
         StringBuilder battleLog = new StringBuilder();
+
 
         //both cards have monstertype
         if (cardA.getCardType().equals("monster") && cardB.getCardType().equals("monster")) {
@@ -212,18 +217,19 @@ public class BattleController extends Controller {
     }
 
     //logic for two monster cards
-    private static String resolveMonsterFight(Card cardA, Card cardB) {
+    public  String resolveMonsterFight(Card cardA, Card cardB) {
+
 
         if (cardA.getCardName().equals("Kraken") || cardB.getCardName().equals("Kraken")) {
             winner = 1;
             return "The Kraken is immune against spells.\n";
         }
 
-        if (cardA.getCardName().equals("Dragon") && cardB.getCardName().equals("Goblin") ||
+        if (cardA.getCardName().equals("Dragon") && cardB.getCardName().contains("Goblin") ||
                 cardA.getCardName().equals("Wizard") && cardB.getCardName().equals("Orc") ||
                 cardA.getCardName().equals("Knight") && cardB.getCardName().equals("WaterSpell") ||
                 cardB.getCardName().equals("Dragon") && cardA.getCardName().equals("Goblin") ||
-                cardB.getCardName().equals("Wizard") && cardA.getCardName().equals("Orc") ||
+                cardB.getCardName().equals("Wizard") && cardA.getCardName().contains("Orc") ||
                 cardB.getCardName().equals("Knight") && cardA.getCardName().equals("WaterSpell")) {
             winner = 2;
             return "The " + cardA.getCardName() + " is not able to damage the " + cardB.getCardName() + ".\n";
@@ -249,7 +255,7 @@ public class BattleController extends Controller {
     }
 
     //logic for two spell cards
-    private static String resolveSpellFight(Card cardA, Card cardB) {
+    public String resolveSpellFight(Card cardA, Card cardB) {
         int effectiveDamageA = cardA.getDamage();
         int effectiveDamageB = cardB.getDamage();
 
@@ -263,12 +269,11 @@ public class BattleController extends Controller {
             effectiveDamageA /= 2;
         }
 
-        if (cardB.getCardName().equals("WaterSpell") && cardA.getCardName().equals("FireSpell") ||
-                cardB.getCardName().equals("NormalSpell") && cardA.getCardName().equals("WaterSpell") ||
+        if (cardB.getCardName().equals("NormalSpell") && cardA.getCardName().equals("WaterSpell") ||
                 cardA.getCardName().equals("FireSpell") && cardB.getCardName().equals("NormalSpell")) {
             effectiveDamageB *= 2;
         } else if (cardB.getCardName().equals("FireSpell") && cardA.getCardName().equals("NormalSpell") ||
-                cardA.getCardName().equals("WaterSpell") && cardB.getCardName().equals("FireSpell") ||
+                cardB.getCardName().equals("FireSpell") && cardA.getCardName().equals("WaterSpell") ||
                 cardA.getCardName().equals("NormalSpell") && cardB.getCardName().equals("WaterSpell")) {
             effectiveDamageB /= 2;
         }
@@ -286,15 +291,15 @@ public class BattleController extends Controller {
     }
 
     //logic for a spell and a monster card
-    private static String resolveMixedFight(Card monsterCard, Card spellCard) {
+    public String resolveMixedFight(Card monsterCard, Card spellCard) {
         StringBuilder battleLog = new StringBuilder();
 
         if (monsterCard.getCardType().equals("monster")) {
             if (spellCard.getCardName().equals("WaterSpell") && monsterCard.getCardName().equals("Knight")) {
                 battleLog.append("The armor of Knights is so heavy that WaterSpells make them drown them instantly.\n");
-            } else if (monsterCard.getCardName().equals("Kraken") || spellCard.getCardName().equals("Kraken")) {
+            } else if (monsterCard.getCardName().equals("Kraken") || spellCard.getCardName().contains("Spell")) {
                 battleLog.append("The Kraken is immune against spells.\n");
-            } else if (spellCard.getCardName().equals("Dragon") && monsterCard.getCardName().equals("Goblin")) {
+            } else if (spellCard.getCardName().equals("Dragon") && monsterCard.getCardName().contains("Goblin")) {
                 battleLog.append("Goblins are too afraid of Dragons to attack.\n");
             } else if (spellCard.getCardName().equals("Wizard") && monsterCard.getCardName().equals("Orc")) {
                 battleLog.append("Wizard can control Orks so they are not able to damage them.\n");
@@ -327,7 +332,7 @@ public class BattleController extends Controller {
                 battleLog.append("The armor of Knights is so heavy that WaterSpells make them drown them instantly.\n");
             } else if (monsterCard.getCardName().equals("Kraken") || spellCard.getCardName().equals("Kraken")) {
                 battleLog.append("The Kraken is immune against spells.\n");
-            } else if (monsterCard.getCardName().equals("Dragon") && spellCard.getCardName().equals("Goblin")) {
+            } else if (monsterCard.getCardName().equals("Dragon") && spellCard.getCardName().contains("Goblin")) {
                 battleLog.append("Goblins are too afraid of Dragons to attack.\n");
             } else if (monsterCard.getCardName().equals("Wizard") && spellCard.getCardName().equals("Orc")) {
                 battleLog.append("Wizard can control Orks so they are not able to damage them.\n");

@@ -16,9 +16,6 @@ import example.com.server.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-
-//todo add token bei update und get user
-//todo add status code responses
 public class UserController extends Controller{
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
@@ -252,4 +249,29 @@ public class UserController extends Controller{
     }
 
 
+    //logout for user by deleting the token in the db
+    public Response deleteToken(String token) {
+        if (token != null) {
+            boolean deleted = getUserRepository().deleteToken(token);
+            if (deleted) {
+                return new Response(
+                        HttpStatus.OK,
+                        ContentType.JSON,
+                        "{ \"data\": \"User successfully logged out.\", \"error\": null }"
+                );
+            } else {
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.JSON,
+                        "{ \"error\": \"No current active session for given token\", \"data\": null }"
+                );
+            }
+        } else {
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.JSON,
+                    "{ \"error\": \"Invalid token provided\", \"data\": null }"
+            );
+        }
+    }
 }

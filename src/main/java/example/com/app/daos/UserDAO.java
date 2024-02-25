@@ -1,6 +1,5 @@
 package example.com.app.daos;
 
-import example.com.app.models.Card;
 import example.com.app.models.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,7 +48,7 @@ public class UserDAO  {
             } else {
                 return false;
             }
-            //todo fix connection close
+            
             //getConnection().close();
 
         } catch (SQLException e) {
@@ -99,7 +98,7 @@ public class UserDAO  {
                 }
             }
 
-            //todo fix connection close
+            
             //getConnection().close();
             return singleUserCache;
         } catch (SQLException e) {
@@ -144,7 +143,7 @@ public class UserDAO  {
             if (singleUserCache == null || !singleUserCache.getToken().equals(token) || !adminUserCache.getToken().equals(token) ) {
                 return null;
             }
-            //todo fix connection close
+            
             //getConnection().close();
            return singleUserCache;
         } catch (SQLException e) {
@@ -172,7 +171,7 @@ public class UserDAO  {
             if (!singleUserCache.getToken().equals( token)) {
                 return null;
             }
-            //todo fix connection close
+            
             //getConnection().close();
             return singleUserCache;
         } catch (SQLException e) {
@@ -228,7 +227,7 @@ public class UserDAO  {
                 } else {
                     return 404;
                 }
-                //todo fix connection close
+                
                 //getConnection().close();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -252,7 +251,7 @@ public class UserDAO  {
             preparedStatement.setString(3, user.getImage());
             preparedStatement.setString(4, user.getUsername());
             preparedStatement.executeUpdate();
-            //todo fix connection close
+            
             //getConnection().close();
             //setCitiesCache(null);
         } catch (SQLException e) {
@@ -273,28 +272,30 @@ public class UserDAO  {
                 }
             }
             //getConnection().close();
-            if(singleUserCache.getPassword().equals(user.getPassword())) {
+            if (singleUserCache != null) {
+                if (singleUserCache.getPassword().equals(user.getPassword())) {
 
-                String token = user.getUsername() + "-mtcgToken";
-                String updateStmt = "UPDATE Users SET token = ? WHERE username = ?";
+                    String token = user.getUsername() + "-mtcgToken";
+                    String updateStmt = "UPDATE Users SET token = ? WHERE username = ?";
 
-                try {
-                    PreparedStatement preparedStatement2 = getConnection().prepareStatement(updateStmt);
-                    preparedStatement2.setString(1, token);
-                    preparedStatement2.setString(2, user.getUsername());
-                    preparedStatement2.executeUpdate();
-                    //todo fix connection close
-                    //getConnection().close();
+                    try {
+                        PreparedStatement preparedStatement2 = getConnection().prepareStatement(updateStmt);
+                        preparedStatement2.setString(1, token);
+                        preparedStatement2.setString(2, user.getUsername());
+                        preparedStatement2.executeUpdate();
 
-                    return token;
+                        //getConnection().close();
 
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                        return token;
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
                 }
-
             }
 
-//todo fix connection close
+
             //getConnection().close();
 
         } catch (SQLException e) {
@@ -304,14 +305,12 @@ public class UserDAO  {
     }
 
 
-    public void delete(int id) {
 
-    }
 
     public void updateUserStats(User user) {
 
         //query admin token
-        String updateStmt = "UPDATE users SET elos = ?, wins = ?, losses= ? WHERE username = ?;";
+        String updateStmt = "UPDATE users SET elo = ?, wins = ?, losses= ? WHERE username = ?;";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(updateStmt)) {
 
             //update the user
@@ -330,5 +329,31 @@ public class UserDAO  {
         catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean deleteToken(String token) {
+        String updateStmt = "UPDATE Users SET Token = NULL WHERE Token = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(updateStmt)) {
+
+            //update the user
+            try {
+                preparedStatement.setString(1, token);
+                int result = preparedStatement.executeUpdate();
+                getConnection().commit();
+
+                if (result > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
